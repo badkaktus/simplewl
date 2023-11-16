@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('wishlists', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 255);
+            $table->string('title', 255);
             $table->integer('user_id', false, true);
             $table->tinyInteger('is_private', false, true)->default(0);
             $table->datetimes();

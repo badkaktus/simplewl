@@ -11,7 +11,8 @@ class UpdateWishRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // todo set to false
+        return true;
     }
 
     /**

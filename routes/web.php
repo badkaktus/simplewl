@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,12 +21,7 @@ use Illuminate\Http\Response;
 Route::get('/', static function () {
     return view('welcome');
 });
-Route::get('/my-wishlist', static function () {
-    // todo аналог dashboard
-    return \response()->json([
-        'text' => 'не забыть реализовать'
-    ]);
-});
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -35,7 +32,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('wish', WishController::class);
+    Route::post('/wish', [WishController::class, 'store'])->name('wish.store');
+    Route::get('/wish/create', [WishController::class, 'create'])->name('wish.create');
+    Route::get('/wish/{wish}/edit', [WishController::class, 'edit'])->name('wish.edit');
+    Route::put('/wish/{wish}', [WishController::class, 'update'])->name('wish.update');
+    Route::delete('/wish/{wish}', [WishController::class, 'destroy'])->name('wish.destroy');
+    Route::post('wish/{id}/complete', [WishController::class, 'complete'])->name('wish.complete');
+});
+//Route::resource('wish', WishController::class)->except(['index']);
+Route::post('/wish/{id}/complete', [WishController::class, 'complete'])->name('wish.complete');
+Route::get('/wishlist/{id?}', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::get('/my-wishlist', [WishlistController::class, 'index'])->name('my-wishlist');
+Route::get('/wish/{wish}', [WishController::class, 'show'])->name('wish.show');
+
+// не забыть удалить
+Route::get('/slug', function () {
+    return \response()->json([
+        'slug' => Str::slug('Hello World'),
+        'slug_ru' => Str::slug('Привет ебаный мир!! 1'),
+    ]);
 });
 
 require __DIR__.'/auth.php';
