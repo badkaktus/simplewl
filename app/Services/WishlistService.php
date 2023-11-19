@@ -18,4 +18,9 @@ class WishlistService
         $slug = $slug ?? Wishlist::DEFAULT_WISHLIST_SLUG;
         return $this->wishlistRepository->findFirstOrCreate($user->id, $title, $slug);
     }
+
+    public function getWishlistByUserIdAndSlug(int $userId, string $slug): ?Wishlist
+    {
+        return $this->wishlistRepository->getWishlistByUserIdAndSlug($userId, $slug);
+    }
 }

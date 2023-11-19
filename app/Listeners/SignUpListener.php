@@ -3,24 +3,16 @@
 namespace App\Listeners;
 
 use App\Models\User;
-use App\Models\Wishlist;
+use App\Services\WishlistService;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class SignUpListener
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct(private \App\Services\WishlistService $wishlistService)
+    public function __construct(private readonly WishlistService $wishlistService)
     {
         //
     }
 
-    /**
-     * Handle the event.
-     */
     public function handle(Registered $event): void
     {
         /** @var User $user */

@@ -2,19 +2,180 @@
 
 namespace Tests\Feature\Http\Controllers;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\User;
+use App\Models\Wish;
+use App\Models\Wishlist;
 use Tests\TestCase;
 
 class WishControllerTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
+    public function test_wish_create_render(): void
     {
-        $response = $this->get('/');
+        $user = User::factory()->create();
+        $this->be($user);
+        $response = $this->get('/wish/create');
 
         $response->assertStatus(200);
+        $response->assertSee('New wish');
+    }
+
+    public function test_wish_store_successfully(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $title = fake()->words(5, true);
+        $description = fake()->paragraph(2);
+        $url = fake()->url;
+        $imageUrl = fake()->imageUrl();
+
+        $response = $this->post('/wish', [
+            'title' => $title,
+            'description' => $description,
+            'url' => $url,
+            'image_url' => $imageUrl,
+            'amount' => 100,
+            'currency' => 'EUR',
+        ]);
+
+        $wish = Wish::where('title', $title)->first();
+
+        $this->assertNotNull($wish);
+        $this->assertInstanceOf(Wish::class, $wish);
+        $this->assertSame($description, $wish->description);
+        $this->assertSame($url, $wish->url);
+        $this->assertSame($imageUrl, $wish->image_url);
+        $this->assertSame('100.00', $wish->amount);
+        $this->assertSame('EUR', $wish->currency);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(sprintf('/wishlist/%s/%s', rawurlencode($user->name), $wish->wishlist->slug));
+    }
+
+    public function test_show_wish_successfully(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->get('/wish/'. $user->name . '/' . $wish->slug);
+
+        $response->assertStatus(200);
+        $response->assertSee($wish->title);
+        $response->assertSee($wish->description);
+        $response->assertSee($wish->url);
+        $response->assertSee($wish->image_url);
+        $response->assertSee($wish->amount);
+        $response->assertSee($wish->currency);
+    }
+
+    public function test_show_edit_form_successfully(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->get('/wish/' . $wish->slug . '/edit');
+
+        $response->assertStatus(200);
+        $response->assertSee($wish->title);
+        $response->assertSee($wish->description);
+        $response->assertSee($wish->url);
+        $response->assertSee($wish->image_url);
+        $response->assertSee($wish->amount);
+        $response->assertSee($wish->currency);
+    }
+
+    public function test_update_wish_successfully(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $title = fake()->words(5, true);
+        $description = fake()->paragraph(2);
+        $url = fake()->url;
+        $imageUrl = fake()->imageUrl();
+
+        $response = $this->put('/wish/' . $wish->slug, [
+            'title' => $title,
+            'description' => $description,
+            'url' => $url,
+            'image_url' => $imageUrl,
+            'amount' => 1986,
+            'currency' => 'RUB',
+        ]);
+
+        $wish->refresh();
+
+        $this->assertSame($title, $wish->title);
+        $this->assertSame($description, $wish->description);
+        $this->assertSame($url, $wish->url);
+        $this->assertSame($imageUrl, $wish->image_url);
+        $this->assertSame('1986.00', $wish->amount);
+        $this->assertSame('RUB', $wish->currency);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(sprintf('/wish/%s/%s', rawurlencode($user->name), $wish->slug));
+    }
+
+    public function test_wish_complete_status_successfully_changed(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->post('/wish/' . $wish->slug . '/complete');
+
+        $wish->refresh();
+
+        $this->assertSame(1, $wish->is_completed);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(sprintf('/wish/%s/%s', rawurlencode($user->name), $wish->slug));
+    }
+
+    public function test_wish_delete_successfully(): void
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->delete('/wish/' . $wish->slug);
+
+        $this->assertNull(Wish::find($wish->id));
+
+        $response->assertStatus(302);
+        $response->assertRedirect(sprintf('/wishlist/%s/%s', rawurlencode($user->name), $wishlist->slug));
     }
 }

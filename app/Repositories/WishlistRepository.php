@@ -11,8 +11,8 @@ class WishlistRepository
         return Wishlist::firstOrCreate(['user_id' => $userId, 'title' => $title, 'slug' => $slug]);
     }
 
-    public function getWishlistByUserIdAndSlug(string $slug): Wishlist
+    public function getWishlistByUserIdAndSlug(int $userId, string $slug): ?Wishlist
     {
-        return Wishlist::where('slug', $slug)->first();
+        return Wishlist::where('slug', $slug)->where('user_id', $userId)->first();
     }
 }

@@ -6,21 +6,20 @@ namespace App\Services;
 
 use App\Http\Requests\StoreWishRequest;
 use App\Http\Requests\UpdateWishRequest;
-use App\Models\User;
 use App\Models\Wish;
 use App\Models\Wishlist;
 use App\Repositories\WishlistRepository;
 use App\Repositories\WishRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class WishService
 {
     public function __construct(
         private readonly WishRepository $wishRepository,
-        private readonly WishlistRepository $wishlistRepository
+        private readonly WishlistRepository $wishlistRepository,
+        private readonly UserService $userService
     ) {
     }
 
@@ -77,28 +76,24 @@ class WishService
         return $wish;
     }
 
-    public function getWish(int $id): Wish
+    public function getWishesByUserAndSlug(?string $username, ?string $wishlistSlug): Collection
     {
-        return Wish::findOrFail($id);
-    }
+        $user = (is_null($username)) ? Auth::user() : $this->userService->getUserByName($username);
 
-    public function getWishes(?string $wishlistSlug): Collection
-    {
-        $userId = Auth::id();
-
-        if (!$wishlistSlug) {
-            $wishlist = $this->wishlistRepository->findFirstOrCreate(
-                $userId,
-                Wishlist::DEFAULT_WISHLIST_TITLE,
-                Wishlist::DEFAULT_WISHLIST_SLUG
-            );
-            $wishlistId = $wishlist->id;
-        } else {
-            $wishlist = $this->wishlistRepository->getWishlistByUserIdAndSlug($wishlistSlug);
-            $wishlistId = $wishlist->id;
+        if (!$user) {
+            return collect();
         }
 
-        return $this->wishRepository->getUserWishesByWishlistId($userId, $wishlistId);
+        if (!$wishlistSlug) {
+            $wishlistSlug = Wishlist::DEFAULT_WISHLIST_SLUG;
+        }
+
+        $wishlist = $this->wishlistRepository->getWishlistByUserIdAndSlug($user->id, $wishlistSlug);
+        if (!$wishlist) {
+            return collect();
+        }
+
+        return $this->wishRepository->getUserWishesByWishlistId($user->id, $wishlist->id);
     }
 
     public function deleteWish(Wish $wish): void
