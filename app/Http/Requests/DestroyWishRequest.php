@@ -6,11 +6,15 @@ use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreWishRequest extends FormRequest
+class DestroyWishRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $wish = $this->route('wish');
+        /** @var User|null $user */
+        $user = $this->user();
+
+        return $user->can('delete-wish', $wish);
     }
 
     /**
@@ -20,6 +24,8 @@ class StoreWishRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ValidationHelper::getWishValidationRules();
+        return [
+            //
+        ];
     }
 }

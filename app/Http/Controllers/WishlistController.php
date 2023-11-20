@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\TryToOpenPrivateWishlist;
 use App\Services\UserService;
-use App\Services\WishlistService;
 use App\Services\WishService;
-use Auth;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -18,6 +17,9 @@ class WishlistController extends Controller
     ) {
     }
 
+    /**
+     * @throws TryToOpenPrivateWishlist
+     */
     public function index(
         string $username,
         ?string $slug = null

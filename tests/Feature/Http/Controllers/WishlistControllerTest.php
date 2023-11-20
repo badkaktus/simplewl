@@ -4,8 +4,6 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Wishlist;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class WishlistControllerTest extends TestCase
@@ -32,5 +30,49 @@ class WishlistControllerTest extends TestCase
                 'title' => $wishlist->title,
                 'slug' => $wishlist->slug,
             ]);
+        }
+
+        public function test_non_auth_user_try_to_get_private_wishlist(): void
+        {
+            $user = User::factory()->create();
+            $wishlist = Wishlist::factory()->create([
+                'user_id' => $user->id,
+                'is_private' => 1
+            ]);
+
+            $response = $this->get('/wishlist/' . $user->name . '/' . $wishlist->slug);
+
+            $response->assertStatus(403);
+            $response->assertSee('private wish list');
+        }
+
+        public function test_auth_user_try_to_get_someone_else_private_wishlist(): void
+        {
+            $user = User::factory()->create();
+            $wishlist = Wishlist::factory()->create([
+                'user_id' => $user->id,
+                'is_private' => 1
+            ]);
+            $userAuth = User::factory()->create();
+            $this->be($userAuth);
+
+            $response = $this->get('/wishlist/' . $user->name . '/' . $wishlist->slug);
+
+            $response->assertStatus(403);
+            $response->assertSee('private wish list');
+        }
+
+        public function test_auth_user_try_to_get_his_own_private_wishlist(): void
+        {
+            $user = User::factory()->create();
+            $wishlist = Wishlist::factory()->create([
+                'user_id' => $user->id,
+                'is_private' => 1
+            ]);
+            $this->be($user);
+
+            $response = $this->get('/wishlist/' . $user->name . '/' . $wishlist->slug);
+
+            $response->assertStatus(200);
         }
 }

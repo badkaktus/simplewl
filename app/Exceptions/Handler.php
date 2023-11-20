@@ -26,5 +26,9 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (TryToOpenPrivateWishlist $e) {
+            return response()->view('errors.403', [], 403);
+        });
     }
 }

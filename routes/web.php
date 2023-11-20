@@ -40,18 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/wish/{wish}', [WishController::class, 'destroy'])->name('wish.destroy');
     Route::post('wish/{id}/complete', [WishController::class, 'complete'])->name('wish.complete');
     Route::get('/my-wishlist', [MyWishlistController::class, 'index'])->name('my-wishlist');
+    Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])->name('wish.complete');
 });
-//Route::resource('wish', WishController::class)->except(['index']);
-Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])->name('wish.complete');
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');
-
-// не забыть удалить
-Route::get('/slug', function () {
-    return \response()->json([
-        'slug' => Str::slug('Hello World'),
-        'slug_ru' => Str::slug('Привет ебаный мир!! 1'),
-    ]);
-});
 
 require __DIR__ . '/auth.php';

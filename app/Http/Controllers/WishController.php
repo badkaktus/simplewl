@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DestroyWishRequest;
+use App\Http\Requests\ShowWishRequest;
 use App\Http\Requests\StoreWishRequest;
 use App\Http\Requests\UpdateWishRequest;
 use App\Models\User;
@@ -13,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
 
 class WishController extends Controller
 {
@@ -40,7 +43,7 @@ class WishController extends Controller
         );
     }
 
-    public function show(User $user, Wish $wish): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function show(ShowWishRequest $request, User $user, Wish $wish): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         return view('wish.show', ['wish' => $wish]);
     }
@@ -68,7 +71,7 @@ class WishController extends Controller
         ]);
     }
 
-    public function destroy(Wish $wish): RedirectResponse
+    public function destroy(DestroyWishRequest $request, Wish $wish): RedirectResponse
     {
         $username = $wish->wishlist->user->name;
         $wishlistSlug = $wish->wishlist->slug;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\TryToOpenPrivateWishlist;
 use App\Http\Requests\StoreWishRequest;
 use App\Http\Requests\UpdateWishRequest;
 use App\Models\Wish;
@@ -91,6 +92,10 @@ class WishService
         $wishlist = $this->wishlistRepository->getWishlistByUserIdAndSlug($user->id, $wishlistSlug);
         if (!$wishlist) {
             return collect();
+        }
+
+        if ($wishlist->is_private && $user->id !== Auth::id()) {
+            throw new TryToOpenPrivateWishlist('Wishlist is private');
         }
 
         return $this->wishRepository->getUserWishesByWishlistId($user->id, $wishlist->id);

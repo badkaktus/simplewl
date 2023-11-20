@@ -75,6 +75,23 @@ class WishControllerTest extends TestCase
         $response->assertSee($wish->currency);
     }
 
+    public function test_forbidden_to_show_wish_from_private_wishlist_to_non_auth_user(): void
+    {
+        $user = User::factory()->create();
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'is_private' => 1
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->get('/wish/'. $user->name . '/' . $wish->slug);
+
+        $response->assertStatus(403);
+        $response->assertSee('private wish list');
+    }
+
     public function test_show_edit_form_successfully(): void
     {
         $user = User::factory()->create();
