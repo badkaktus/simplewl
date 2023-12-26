@@ -1,14 +1,14 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto py-6 lg:py-8 px-8 md:px-40">
         <form method="POST" action="{{ route('wish.update', $wish) }}">
             @method('PUT')
             @csrf
             <div class="space-y-12">
                 <div class="border-b border-gray-900/10 pb-12">
-                    <h2 class="text-base font-semibold leading-7 text-gray-900">Update wish</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Update wish</p>
+                    <h2 class="text-base font-semibold leading-7 text-gray-900">Edit your wish</h2>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">If something has changed, edit your Wish on this page</p>
 
-                    <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="mt-10 flex flex-col gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-4">
                             <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
                             <div class="mt-2">
@@ -23,7 +23,7 @@
                             </div>
                         </div>
 
-                        <div class="col-span-full">
+                        <div class="sm:col-span-4">
                             <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
                             <div class="mt-2">
                                 <textarea
@@ -64,31 +64,32 @@
                             </div>
                         </div>
 
-                        <div class="sm:col-span-4">
-                            <label for="amount" class="block text-sm font-medium leading-6 text-gray-900">Amount</label>
-                            <div class="mt-2">
-                                <input
-                                    id="amount"
-                                    name="amount"
-                                    type="number"
-                                    autocomplete="amount"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    value="{{ $wish->amount }}"
-                                >
+                        <div class="sm:col-span-4 grid grid-cols-4 gap-6">
+                            <div>
+                                <label for="amount" class="block text-sm font-medium leading-6 text-gray-900">Amount</label>
+                                <div class="mt-2">
+                                    <input
+                                        id="amount"
+                                        name="amount"
+                                        type="number"
+                                        autocomplete="amount"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        value="{{ $wish->amount }}"
+                                    >
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="sm:col-span-4">
-                            <label for="currency" class="block text-sm font-medium leading-6 text-gray-900">Currency</label>
-                            <div class="mt-2">
-                                <input
-                                    id="currency"
-                                    name="currency"
-                                    type="text"
-                                    autocomplete="currency"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    value="{{ $wish->currency }}"
-                                >
+                            <div>
+                                <label for="currency" class="block text-sm font-medium leading-6 text-gray-900">Currency</label>
+                                <div class="mt-2">
+                                    <input
+                                        id="currency"
+                                        name="currency"
+                                        type="text"
+                                        autocomplete="currency"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        value="{{ $wish->currency }}"
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>

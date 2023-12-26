@@ -195,4 +195,88 @@ class WishControllerTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect(sprintf('/wishlist/%s/%s', rawurlencode($user->name), $wishlist->slug));
     }
+
+    public function test_cant_finalize_a_wish_that_isnt_your_own(): void
+    {
+        $user = User::factory()->create();
+        $user1 = User::factory()->create();
+        $this->be($user1);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->post('/wish/' . $wish->slug . '/complete');
+
+        $wish->refresh();
+
+        $this->assertSame(0, $wish->is_completed);
+    }
+
+    public function test_cant_update_a_wish_that_isnt_your_own(): void
+    {
+        $user = User::factory()->create();
+        $user1 = User::factory()->create();
+        $this->be($user1);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $title = fake()->words(5, true);
+        $description = fake()->paragraph(2);
+        $url = fake()->url;
+        $imageUrl = fake()->imageUrl();
+
+        $response = $this->put('/wish/' . $wish->slug, [
+            'title' => $title,
+            'description' => $description,
+            'url' => $url,
+            'image_url' => $imageUrl,
+            'amount' => 1986,
+            'currency' => $this->getNewCurrency($wish->currency),
+        ]);
+
+        $wish->refresh();
+
+        $this->assertNotSame($title, $wish->title);
+        $this->assertNotSame($description, $wish->description);
+        $this->assertNotSame($url, $wish->url);
+        $this->assertNotSame($imageUrl, $wish->image_url);
+        $this->assertNotSame('1986.00', $wish->amount);
+        $this->assertNotSame('RUB', $wish->currency);
+    }
+
+    public function test_cant_destroy_a_wish_that_isnt_your_own(): void
+    {
+        $user = User::factory()->create();
+        $user1 = User::factory()->create();
+        $this->be($user1);
+
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->delete('/wish/' . $wish->slug);
+
+        $this->assertNotNull(Wish::find($wish->id));
+    }
+
+    private function getNewCurrency(string $currency): string
+    {
+        if ($currency === 'RUB') {
+            return 'USD';
+        }
+
+        return 'RUB';
+    }
 }

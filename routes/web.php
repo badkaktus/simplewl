@@ -4,9 +4,8 @@ use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Middleware\CheckWishOwnership;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +20,7 @@ use Illuminate\Support\Str;
 
 Route::get('/', static function () {
     return view('welcome');
-});
-
+})->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -35,12 +33,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/wish', [WishController::class, 'store'])->name('wish.store');
     Route::get('/wish/create', [WishController::class, 'create'])->name('wish.create');
+    Route::get('/my-wishlist', [MyWishlistController::class, 'index'])->name('my-wishlist');
     Route::get('/wish/{wish}/edit', [WishController::class, 'edit'])->name('wish.edit');
     Route::put('/wish/{wish}', [WishController::class, 'update'])->name('wish.update');
     Route::delete('/wish/{wish}', [WishController::class, 'destroy'])->name('wish.destroy');
-    Route::post('wish/{id}/complete', [WishController::class, 'complete'])->name('wish.complete');
-    Route::get('/my-wishlist', [MyWishlistController::class, 'index'])->name('my-wishlist');
-    Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])->name('wish.complete');
+    Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])
+        ->name('wish.complete');
 });
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');

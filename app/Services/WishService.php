@@ -50,9 +50,9 @@ class WishService
         );
     }
 
-    public function updateWish(UpdateWishRequest $request, int $id): Wish
+    public function updateWish(UpdateWishRequest $request, string $slug): Wish
     {
-        $wish = $this->wishRepository->getWish($id);
+        $wish = $this->wishRepository->getWishBySlugAndUserId($slug, Auth::id());
 
         $wish->update([
             'title' => $request->title,
@@ -69,7 +69,7 @@ class WishService
 
     public function changeCompletedStatus(string $wishSlug): Wish
     {
-        $wish = $this->wishRepository->getWishBySlug($wishSlug);
+        $wish = $this->wishRepository->getWishBySlugAndUserId($wishSlug, Auth::id());
         $wish->update([
             'is_completed' => (int)!$wish->is_completed
         ]);

@@ -55,7 +55,7 @@ class WishController extends Controller
 
     public function update(UpdateWishRequest $request, Wish $wish): RedirectResponse
     {
-        $updatedWish = $this->wishService->updateWish($request, $wish->id);
+        $updatedWish = $this->wishService->updateWish($request, $wish->slug);
         return Redirect::route('wish.show', [
             'user' => $wish->wishlist->user->name,
             'wish' => $updatedWish

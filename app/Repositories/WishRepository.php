@@ -37,19 +37,23 @@ class WishRepository
         return Wish::findOrFail($id);
     }
 
-    public function getWishBySlug(string $slug): Wish
+    public function getWishBySlugAndUserId(string $slug, int $userId): Wish
     {
-        return Wish::where('slug', $slug)->firstOrFail();
+        return Wish::where('slug', $slug)
+            ->whereHas('wishlist', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->firstOrFail();
     }
 
     public function getUserWishesByWishlistId(int $userId, int $wishlistId): Collection
     {
-        $wishes = DB::table('wishes')
-            ->select('wishes.*')
-            ->leftJoin('wishlists', 'wishlists.id', '=', 'wishes.wishlist_id')
-            ->where('wishlists.user_id', '=', $userId)
-            ->where('wishlists.id', '=', $wishlistId)
-            ->orderBy('wishes.created_at', 'desc');
-        return $wishes->get();
+        return Wish::where('wishlist_id', $wishlistId)
+            ->whereHas('wishlist', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->orderBy('is_completed')
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }
