@@ -34,7 +34,7 @@ class WishControllerTest extends TestCase
             'description' => $description,
             'url' => $url,
             'image_url' => $imageUrl,
-            'amount' => 100,
+            'amount' => 100.00,
             'currency' => 'EUR',
         ]);
 
@@ -137,7 +137,7 @@ class WishControllerTest extends TestCase
             'description' => $description,
             'url' => $url,
             'image_url' => $imageUrl,
-            'amount' => 1986,
+            'amount' => 1986.00,
             'currency' => 'RUB',
         ]);
 
