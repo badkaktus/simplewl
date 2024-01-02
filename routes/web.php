@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Middleware\CheckWishOwnership;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +42,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])
         ->name('wish.complete');
 });
+
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');
 
-require __DIR__ . '/auth.php';
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
+Route::get('/privacy', static function () {
+    return view('privacy');
+})->name('privacy');
+
+require __DIR__.'/auth.php';

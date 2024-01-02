@@ -10,9 +10,10 @@ class UserRepository
 {
     public function getUserByName(string $name): ?User
     {
-        if (!$user = User::where('name', $name)->first()) {
+        if (! $user = User::where('name', $name)->first()) {
             return null;
         }
+
         return $user;
     }
 }

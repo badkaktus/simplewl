@@ -6,7 +6,6 @@ namespace App\Repositories;
 
 use App\Models\Wish;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class WishRepository
 {
@@ -28,7 +27,7 @@ class WishRepository
             'url' => $url,
             'image_url' => $imageUrl,
             'amount' => $amount,
-            'currency' => $currency
+            'currency' => $currency,
         ]);
     }
 

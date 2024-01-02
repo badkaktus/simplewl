@@ -14,7 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         '/register',
         '/wish',
-        '/wish/*'
+        '/wish/*',
     ];
     // todo не забыть удалить
 }

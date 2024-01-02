@@ -26,6 +26,7 @@ use Illuminate\Support\Str;
  * @property int $is_completed
  * @property string|null $slug
  * @property-read Wishlist $wishlist
+ *
  * @method static Builder|Wish newModelQuery()
  * @method static Builder|Wish newQuery()
  * @method static Builder|Wish query()
@@ -42,13 +43,14 @@ use Illuminate\Support\Str;
  * @method static Builder|Wish whereUrl($value)
  * @method static Builder|Wish whereWishlistId($value)
  * @method static WishFactory factory($count = null, $state = [])
+ *
  * @mixin \Eloquent
  */
 class Wish extends Model
 {
-    public const TABLE_NAME = 'wishes';
-
     use HasFactory;
+
+    public const TABLE_NAME = 'wishes';
 
     protected $fillable = [
         'title',

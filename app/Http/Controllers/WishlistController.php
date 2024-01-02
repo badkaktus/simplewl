@@ -26,6 +26,7 @@ class WishlistController extends Controller
     ): View|Application|Factory|\Illuminate\Contracts\Foundation\Application {
         $wishes = $this->wishService->getWishesByUserAndSlug($username, $slug);
         $user = $this->userService->getUserByName($username);
+
         return view(
             'wishlist.index',
             [

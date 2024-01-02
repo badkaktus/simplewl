@@ -10,7 +10,7 @@
         </a>
         @if(Auth::check())
             <nav
-                class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-400	flex flex-wrap items-center text-base justify-center">
+                class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-400 flex flex-wrap items-center text-base justify-center">
                 <x-nav-link :href="route('wish.create')" :active="request()->routeIs('wish.create')">
                     {{ __('New wish') }}
                 </x-nav-link>
@@ -58,12 +58,15 @@
             </div>
         @endif
         @unless(Auth::check())
-            <a href="{{ route('register') }}" class="focus:outline-none text-base mt-4 md:mt-0 mr-5">
-                Register
-            </a>
-            <a href="{{ route('login') }}" class="focus:outline-none text-base mt-4 md:mt-0">
-                Login
-            </a>
+            <nav
+                class="md:ml-auto">
+                <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
+                    {{ __('Register') }}
+                </x-nav-link>
+                <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                    {{ __('Login') }}
+                </x-nav-link>
+            </nav>
         @endunless
     </div>
 </header>

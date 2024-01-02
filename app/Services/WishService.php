@@ -28,7 +28,7 @@ class WishService
     {
         $userId = Auth::id();
 
-        if (!$userId) {
+        if (! $userId) {
             throw new \Exception('User not found');
         }
 
@@ -71,9 +71,10 @@ class WishService
     {
         $wish = $this->wishRepository->getWishBySlugAndUserId($wishSlug, Auth::id());
         $wish->update([
-            'is_completed' => (int)!$wish->is_completed
+            'is_completed' => (int) ! $wish->is_completed,
         ]);
         $wish->refresh();
+
         return $wish;
     }
 
@@ -81,16 +82,16 @@ class WishService
     {
         $user = (is_null($username)) ? Auth::user() : $this->userService->getUserByName($username);
 
-        if (!$user) {
+        if (! $user) {
             return collect();
         }
 
-        if (!$wishlistSlug) {
+        if (! $wishlistSlug) {
             $wishlistSlug = Wishlist::DEFAULT_WISHLIST_SLUG;
         }
 
         $wishlist = $this->wishlistRepository->getWishlistByUserIdAndSlug($user->id, $wishlistSlug);
-        if (!$wishlist) {
+        if (! $wishlist) {
             return collect();
         }
 

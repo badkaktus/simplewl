@@ -16,7 +16,8 @@ class ImageWithCheck extends Component
         public Wish $wish,
         public string $class = '',
         public bool $isShowText = true,
-    ) {}
+    ) {
+    }
 
     /**
      * Get the view / contents that represent the component.

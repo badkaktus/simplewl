@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $slug
+ *
  * @method static Builder|Wishlist newModelQuery()
  * @method static Builder|Wishlist newQuery()
  * @method static Builder|Wishlist query()
@@ -31,16 +32,20 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Wishlist whereUpdatedAt($value)
  * @method static Builder|Wishlist whereUserId($value)
  * @method static WishlistFactory factory($count = null, $state = [])
+ *
  * @property-read User $user
+ *
  * @mixin Eloquent
  */
 class Wishlist extends Model
 {
-    public const TABLE_NAME = 'wishlists';
-    public const DEFAULT_WISHLIST_TITLE = 'My Wishlist';
-    public const DEFAULT_WISHLIST_SLUG = 'my-wishlist';
-
     use HasFactory;
+
+    public const TABLE_NAME = 'wishlists';
+
+    public const DEFAULT_WISHLIST_TITLE = 'My Wishlist';
+
+    public const DEFAULT_WISHLIST_SLUG = 'my-wishlist';
 
     protected $fillable = [
         'title',

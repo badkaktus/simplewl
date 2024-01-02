@@ -15,7 +15,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\Request;
 
 class WishController extends Controller
 {
@@ -34,11 +33,12 @@ class WishController extends Controller
     public function store(StoreWishRequest $request): RedirectResponse
     {
         $wish = $this->wishService->createWish($request);
+
         return Redirect::route(
             'wishlist.index',
             [
                 'name' => $wish->wishlist->user->name,
-                'slug' => $wish->wishlist->slug
+                'slug' => $wish->wishlist->slug,
             ]
         );
     }
@@ -56,18 +56,20 @@ class WishController extends Controller
     public function update(UpdateWishRequest $request, Wish $wish): RedirectResponse
     {
         $updatedWish = $this->wishService->updateWish($request, $wish->slug);
+
         return Redirect::route('wish.show', [
             'user' => $wish->wishlist->user->name,
-            'wish' => $updatedWish
+            'wish' => $updatedWish,
         ]);
     }
 
     public function complete(string $wishSlug): RedirectResponse
     {
         $wish = $this->wishService->changeCompletedStatus($wishSlug);
+
         return Redirect::route('wish.show', [
             'user' => $wish->wishlist->user->name,
-            'wish' => $wish
+            'wish' => $wish,
         ]);
     }
 
@@ -76,9 +78,10 @@ class WishController extends Controller
         $username = $wish->wishlist->user->name;
         $wishlistSlug = $wish->wishlist->slug;
         $this->wishService->deleteWish($wish);
+
         return Redirect::route('wishlist.index', [
             'name' => $username,
-            'slug' => $wishlistSlug
+            'slug' => $wishlistSlug,
         ]);
     }
 }

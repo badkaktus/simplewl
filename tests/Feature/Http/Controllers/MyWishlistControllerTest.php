@@ -23,7 +23,7 @@ class MyWishlistControllerTest extends TestCase
         $wishlist = Wishlist::factory()->create([
             'user_id' => $user->id,
             'title' => Wishlist::DEFAULT_WISHLIST_TITLE,
-            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
         ]);
 
         $wish = Wish::factory()->create([

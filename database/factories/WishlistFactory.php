@@ -17,6 +17,7 @@ class WishlistFactory extends Factory
         $title = fake()->words(5, true);
         $user = User::factory()->create();
         $userId = $user->id;
+
         return [
             'title' => $title,
             'slug' => Str::slug($title),

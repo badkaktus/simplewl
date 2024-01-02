@@ -14,6 +14,7 @@ class WishFactory extends Factory
     public function definition(): array
     {
         $title = fake()->words(5, true);
+
         return [
             'title' => $title,
             'description' => fake()->paragraph(),
@@ -23,7 +24,7 @@ class WishFactory extends Factory
             'image_url' => fake()->imageUrl(),
             'is_completed' => 0,
             'wishlist_id' => Wishlist::factory()->create()->id,
-            'slug' => Str::slug($title)
+            'slug' => Str::slug($title),
         ];
     }
 }

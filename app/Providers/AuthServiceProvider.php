@@ -25,9 +25,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('show-wish', function (User $user, Wish $wish) {
-            if (!$wish->wishlist->is_private) {
+            if (! $wish->wishlist->is_private) {
                 return true;
             }
+
             return $user->id === $wish->wishlist->user_id;
         });
 

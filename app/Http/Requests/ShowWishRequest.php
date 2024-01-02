@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
+use App\Models\Wish;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -10,6 +11,7 @@ class ShowWishRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        /** @var Wish $wish */
         $wish = $this->route('wish');
         /** @var User|null $user */
         $user = $this->user();
