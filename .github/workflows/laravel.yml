@@ -1,4 +1,4 @@
-name: Laravel
+name: SimpleWlTest
 
 on:
   push:
