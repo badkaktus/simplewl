@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Wish;
 use App\Repositories\UserRepository;
 
 class UserService
@@ -15,6 +16,7 @@ class UserService
 
     public function getUserByName(string $name): ?User
     {
+        return new Wish();
         return $this->userRepository->getUserByName($name);
     }
 }
