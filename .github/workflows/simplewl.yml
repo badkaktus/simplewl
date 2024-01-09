@@ -1,4 +1,4 @@
-name: SimpleWlTest
+name: SimpleWl
 
 on:
   push:
