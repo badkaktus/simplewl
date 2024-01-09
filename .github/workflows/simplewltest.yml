@@ -28,6 +28,10 @@ jobs:
         run: |
           mkdir -p database
           touch database/database.sqlite
+      - name: Execute laravel pint
+        run: vendor/bin/pint
+      - name: Execute phpstan
+        run: vendor/bin/phpstan analyse
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: sqlite

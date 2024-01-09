@@ -5,9 +5,7 @@ use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishController;
 use App\Http\Controllers\WishlistController;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
