@@ -39,6 +39,7 @@ jobs:
         run: vendor/bin/phpunit
 
   deploy:
+    needs: tests
     name: Deploy app to fly.io
     runs-on: ubuntu-latest
     steps:
