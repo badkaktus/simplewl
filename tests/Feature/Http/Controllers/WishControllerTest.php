@@ -45,7 +45,7 @@ class WishControllerTest extends TestCase
         $this->assertSame($description, $wish->description);
         $this->assertSame($url, $wish->url);
         $this->assertSame($imageUrl, $wish->image_url);
-        $this->assertSame(100, $wish->amount);
+        $this->assertSame(100.00, $wish->getAmount());
         $this->assertSame('EUR', $wish->currency);
 
         $response->assertStatus(302);
@@ -147,7 +147,7 @@ class WishControllerTest extends TestCase
         $this->assertSame($description, $wish->description);
         $this->assertSame($url, $wish->url);
         $this->assertSame($imageUrl, $wish->image_url);
-        $this->assertSame(1986, $wish->amount);
+        $this->assertSame(1986.00, $wish->getAmount());
         $this->assertSame('RUB', $wish->currency);
 
         $response->assertStatus(302);

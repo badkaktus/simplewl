@@ -78,4 +78,9 @@ class Wish extends Model
     {
         return 'slug';
     }
+
+    public function getAmount(): float
+    {
+        return (float) $this->amount;
+    }
 }
