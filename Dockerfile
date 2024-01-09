@@ -13,6 +13,12 @@ ARG PHP_VERSION
 
 LABEL fly_launch_runtime="laravel"
 
+# pecl install
+RUN apt-get update \
+    && apt-get install -y php${PHP_VERSION}-dev php-pear \
+    && pecl channel-update pecl.php.net \
+    && pecl install excimer
+
 # copy application code, skipping files based on .dockerignore
 COPY . /var/www/html
 

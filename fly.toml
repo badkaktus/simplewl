@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for simplewl-old-silence-3670 on 2024-01-09T18:22:12+02:00
+# fly.toml app configuration file generated for simplewl-wild-morning-6231 on 2024-01-09T20:39:17+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "simplewl-old-silence-3670"
+app = "simplewl-wild-morning-6231"
 primary_region = "ams"
 console_command = "php /var/www/html/artisan tinker"
 
@@ -19,6 +19,7 @@ console_command = "php /var/www/html/artisan tinker"
   LOG_STDERR_FORMATTER = "Monolog\\Formatter\\JsonFormatter"
   SESSION_DRIVER = "cookie"
   SESSION_SECURE_COOKIE = "true"
+  SENTRY_TRACES_SAMPLE_RATE=1.0
 
 [http_service]
   internal_port = 8080
