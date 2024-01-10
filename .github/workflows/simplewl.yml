@@ -27,7 +27,7 @@ jobs:
       - name: Create Database
         run: |
           mkdir -p database
-          touch database/database.sqlite
+          touch storage/database/database.sqlite
       - name: Execute laravel pint
         run: vendor/bin/pint
       - name: Execute phpstan
@@ -35,7 +35,7 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
+          DB_DATABASE: storage/database/database.sqlite
         run: vendor/bin/phpunit
 
   deploy:
