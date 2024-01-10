@@ -13,6 +13,7 @@ console_command = "php /var/www/html/artisan tinker"
     PHP_VERSION = "8.2"
 
 [env]
+  APP_NAME = "Simple wishlist"
   APP_ENV = "production"
   LOG_CHANNEL = "stderr"
   LOG_LEVEL = "info"
