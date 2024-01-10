@@ -32,9 +32,9 @@ console_command = "php /var/www/html/artisan tinker"
   min_machines_running = 0
   processes = ["app"]
 
-[mounts]
-  source="storage_vol"
-  destination="/var/www/html/storage"
+#[mounts]
+#  source="storage_vol"
+#  destination="/var/www/html/storage"
 
 [[vm]]
   cpu_kind = "shared"
