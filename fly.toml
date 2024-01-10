@@ -22,7 +22,6 @@ console_command = "php /var/www/html/artisan tinker"
   SENTRY_TRACES_SAMPLE_RATE=1.0
   DB_CONNECTION= "sqlite"
   DB_DATABASE= "/var/www/html/storage/database/database.sqlite"
-  DB_FOREIGN_KEYS=true
 
 [http_service]
   internal_port = 8080
@@ -32,9 +31,9 @@ console_command = "php /var/www/html/artisan tinker"
   min_machines_running = 0
   processes = ["app"]
 
-#[mounts]
-#  source="storage_vol"
-#  destination="/var/www/html/storage"
+[mounts]
+  source="storage_vol"
+  destination="/var/www/html/storage"
 
 [[vm]]
   cpu_kind = "shared"
