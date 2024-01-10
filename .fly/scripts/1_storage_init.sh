@@ -12,12 +12,5 @@ elif [ ! -f "$DATABASE_FILE" ]; then
     echo "Creating $DATABASE_FILE in the existing directory"
     touch "$DATABASE_FILE"
 fi
-
-if [ -z "$RELEASE_COMMAND" ]; then
-    # We are NOT in a temporary VM, run as normal...
-    cd /var/www/html
-    php artisan migrate --force
-else
-    # We are in the temporary VM created
-    # for release commands...
-fi
+cd /var/www/html
+php artisan migrate --force
