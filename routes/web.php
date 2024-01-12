@@ -51,4 +51,8 @@ Route::get('/privacy', static function () {
     return view('privacy');
 })->name('privacy');
 
+Route::get('/how-to-delete-your-account', static function () {
+    return view('how-to-delete-your-account');
+})->name('how-to-delete-your-account');
+
 require __DIR__.'/auth.php';

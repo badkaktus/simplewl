@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="mx-12">
-        <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+        <h1 class="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-xl lg:text-xl">
             Privacy Policy</h1>
         <p class="my-4 text-lg text-gray-500">Last updated: December 27, 2023</p>
         <p class="my-4 text-gray-500">This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your

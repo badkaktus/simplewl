@@ -40,6 +40,10 @@
             <a href="{{ route('privacy') }}">
                 Privacy policy
             </a>
+            |
+            <a href="{{ route('how-to-delete-your-account') }}">
+                How to delete your account
+            </a>
         </p>
         <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
           <a href="https://github.com/badkaktus/simplewl" class="text-gray-300" target="_blank">
