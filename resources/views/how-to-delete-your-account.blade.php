@@ -12,9 +12,5 @@
             <li>scroll to the bottom of the page</li>
             <li>click the "Delete Account" button</li>
         </ol>
-{{--        1. log in--}}
-{{--        2. go to your profile--}}
-{{--        3. scroll to the bottom of the page--}}
-{{--        4. click the "Delete Account" button--}}
     </div>
 </x-app-layout>
