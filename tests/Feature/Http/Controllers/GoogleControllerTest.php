@@ -9,7 +9,7 @@ use App\Models\UserAttributes;
 use App\Providers\RouteServiceProvider;
 use Tests\Feature\Http\Controllers\AbstractThirdPartyAuthController;
 
-class GoogleController extends AbstractThirdPartyAuthController
+class GoogleControllerTest extends AbstractThirdPartyAuthController
 {
     public function test_redirect_to_google(): void
     {

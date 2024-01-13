@@ -10,15 +10,20 @@ use Tests\TestCase;
 
 abstract class AbstractThirdPartyAuthController extends TestCase
 {
-    protected function mockUser(string $driver, int $id, string $nickname, string $email): void
+    protected function mockUser(string $driver, int $id, string $nickname, ?string $email = null): void
     {
         $abstractUser = Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getId')
-            ->andReturn($id)
-            ->shouldReceive('getEmail')
-            ->andReturn($email)
+            ->andReturn($id);
+        $abstractUser
             ->shouldReceive('getNickname')
             ->andReturn($nickname);
+
+        if (!is_null($email)) {
+            $abstractUser
+                ->shouldReceive('getEmail')
+                ->andReturn($email);
+        }
 
         $provider = Mockery::mock('Laravel\Socialite\Contracts\Provider');
         $provider->shouldReceive('user')->andReturn($abstractUser);

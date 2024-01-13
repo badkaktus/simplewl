@@ -10,6 +10,7 @@ use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Telegram\TelegramExtendSocialite;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,8 @@ class EventServiceProvider extends ServiceProvider
         ],
         SocialiteWasCalled::class => [
             GoogleExtendSocialite::class.'@handle',
-            FacebookExtendSocialite::class.'@handle',
+            TelegramExtendSocialite::class.'@handle',
+//            FacebookExtendSocialite::class.'@handle',
             GitHubExtendSocialite::class.'@handle',
         ],
     ];

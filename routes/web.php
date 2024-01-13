@@ -3,6 +3,7 @@
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\WishController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('w
 
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('/auth/telegram/callback', [TelegramController::class, 'handleTelegramCallback']);
 
 Route::get('/privacy', static function () {
     return view('privacy');
