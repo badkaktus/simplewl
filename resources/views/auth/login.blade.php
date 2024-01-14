@@ -71,9 +71,7 @@
 
     {{--    @production--}}
     <div class="flex items-center justify-center mt-4">
-        <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="SimpleWLAuthBot"
-                data-size="large" data-radius="6" data-auth-url="http://localhost/auth/telegram/callback"
-                data-request-access="write"></script>
+        {!! Socialite::driver('telegram')->getButton() !!}
     </div>
     {{--    @endproduction--}}
 
