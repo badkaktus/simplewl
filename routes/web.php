@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
@@ -48,6 +49,8 @@ Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('w
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 Route::get('/auth/telegram/callback', [TelegramController::class, 'handleTelegramCallback']);
+Route::get('/auth/github', [GithubController::class, 'redirectToGithub']);
+Route::get('/auth/github/callback', [GithubController::class, 'handleGithubCallback']);
 
 Route::get('/privacy', static function () {
     return view('privacy');
