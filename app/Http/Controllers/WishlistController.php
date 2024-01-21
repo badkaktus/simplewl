@@ -61,7 +61,7 @@ class WishlistController extends Controller
         string $slug
     ): RedirectResponse {
         $user = $this->userService->getUserByName($username);
-        if (is_null($user->id)) {
+        if (is_null($user)) {
             throw new Exception('User not found');
         }
         $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user->id, $slug);
