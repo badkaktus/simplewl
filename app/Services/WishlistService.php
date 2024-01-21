@@ -24,4 +24,13 @@ class WishlistService
     {
         return $this->wishlistRepository->getWishlistByUserIdAndSlug($userId, $slug);
     }
+
+    public function changeVisibility(Wishlist $wishlist): Wishlist
+    {
+        $wishlist->update([
+            'is_private' => ! $wishlist->is_private,
+        ]);
+
+        return $wishlist;
+    }
 }

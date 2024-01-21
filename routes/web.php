@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/wish/{wish}', [WishController::class, 'destroy'])->name('wish.destroy');
     Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])
         ->name('wish.complete');
+    Route::get('/wishlist/{name}/{slug}/visibility', [WishlistController::class, 'changeVisibility'])
+        ->name('wishlist.changeVisibility');
 });
 
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');

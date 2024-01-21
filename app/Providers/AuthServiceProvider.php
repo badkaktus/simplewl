@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Models\Wish;
+use App\Models\Wishlist;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -38,6 +39,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('delete-wish', function (User $user, Wish $wish) {
             return $user->id === $wish->wishlist->user_id;
+        });
+
+        Gate::define('update-wishlist-visibility', function (User $user, Wishlist $wishlist) {
+            return $user->id === $wishlist->user_id;
         });
     }
 }
