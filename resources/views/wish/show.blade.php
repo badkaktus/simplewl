@@ -42,7 +42,8 @@
                                     </div>
                                 @endif
                                 <div>
-                                    <a href="{{ route('wish.edit', $wish->slug) }}" class="rounded-full w-10 h-10 hover:bg-gray-300 bg-gray-200 p-0 border-0 inline-flex items-center justify-center hover:text-gray-500 ml-4">
+                                    <a href="{{ route('wish.edit', $wish->slug) }}"
+                                       class="rounded-full w-10 h-10 hover:bg-gray-300 bg-gray-200 p-0 border-0 inline-flex items-center justify-center hover:text-gray-500 ml-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"
                                              viewBox="0 0 512 512">
                                             <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.-->
@@ -74,16 +75,16 @@
                     <p class="leading-relaxed">{{ $wish->description }}</p>
                     <div class="flex justify-between mt-1 items-center pb-5 border-b-2 border-gray-100 mb-5">
                     </div>
-                    <div class="flex">
-                        <span class="title-font font-medium text-2xl text-gray-900">
-                            {{ $wish->amount }} {{ $wish->currency }}
-                        </span>
-                        <a
-                            class="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
-                            href="{{ $wish->url }}" target="_blank" rel="noopener noreferrer"
-                        >
-                            Link to item
-                        </a>
+                    <div class="flex justify-between">
+                        <div>
+                             <span class="title-font font-medium text-2xl text-gray-900">
+                                {{ $wish->amount }} {{ $wish->currency }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <x-social-share-buttons/>
+                        </div>
                     </div>
                 </div>
             </div>
