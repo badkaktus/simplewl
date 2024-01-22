@@ -69,7 +69,7 @@ class WishControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($wish->title);
         $response->assertSee($wish->description);
-        $response->assertSee($wish->url);
+        $response->assertSee('Share wish to');
         $response->assertSee($wish->image_url);
         $response->assertSee($wish->amount);
         $response->assertSee($wish->currency);
