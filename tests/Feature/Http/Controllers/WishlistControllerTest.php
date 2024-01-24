@@ -18,6 +18,7 @@ class WishlistControllerTest extends TestCase
         $response = $this->get('/wishlist/' . $wishlist->user->name);
 
         $response->assertStatus(200);
+        $response->assertSee('Your wishlist is empty');
     }
 
     public function test_get_route_user_and_slug(): void
