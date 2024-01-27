@@ -20,7 +20,7 @@ class ShowWishRequest extends FormRequest
             return true;
         }
 
-        if ($user === null && $wish->wishlist->is_private) {
+        if ($user === null) {
             return false;
         }
 
