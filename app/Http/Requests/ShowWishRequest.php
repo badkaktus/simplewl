@@ -16,7 +16,7 @@ class ShowWishRequest extends FormRequest
         /** @var User|null $user */
         $user = $this->user();
 
-        if (!$wish->wishlist->is_private) {
+        if (! $wish->wishlist->is_private) {
             return true;
         }
 

@@ -6,6 +6,7 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Models\UserAttributes;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Str;
@@ -32,6 +33,8 @@ class Telegram implements AuthProviderInterface
             'telegram_id' => $user->getId(),
         ]);
         $existingUser->attributes()->save($attributes);
+
+        event(new Registered($existingUser));
 
         return $existingUser;
     }

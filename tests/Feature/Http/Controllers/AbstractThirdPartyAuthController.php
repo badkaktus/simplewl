@@ -19,7 +19,7 @@ abstract class AbstractThirdPartyAuthController extends TestCase
             ->shouldReceive('getNickname')
             ->andReturn($nickname);
 
-        if (!is_null($email)) {
+        if (! is_null($email)) {
             $abstractUser
                 ->shouldReceive('getEmail')
                 ->andReturn($email);

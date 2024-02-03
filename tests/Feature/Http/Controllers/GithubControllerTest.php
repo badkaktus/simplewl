@@ -6,8 +6,8 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserAttributes;
+use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
-use Tests\Feature\Http\Controllers\AbstractThirdPartyAuthController;
 
 class GithubControllerTest extends AbstractThirdPartyAuthController
 {
@@ -35,6 +35,10 @@ class GithubControllerTest extends AbstractThirdPartyAuthController
         ]);
         $this->assertDatabaseHas('user_attributes', [
             'github_id' => $githubIdUser,
+        ]);
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => User::whereEmail($githubEmailUser)->first()->id,
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
         ]);
     }
 

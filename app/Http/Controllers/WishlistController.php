@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\TryToOpenPrivateWishlist;
 use App\Http\Requests\ChangeWishlistVisibilityRequest;
-use App\Models\User;
 use App\Models\Wishlist;
 use App\Services\UserService;
 use App\Services\WishlistService;
@@ -66,6 +65,7 @@ class WishlistController extends Controller
         }
         $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user->id, $slug);
         $this->wishlistService->changeVisibility($wishlist);
+
         return redirect()->route('wishlist.index', [$username, $slug]);
     }
 }

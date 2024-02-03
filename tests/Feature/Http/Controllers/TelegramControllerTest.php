@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Feature\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
 use Tests\Feature\Http\Controllers\AbstractThirdPartyAuthController;
 
@@ -25,6 +27,10 @@ class TelegramControllerTest extends AbstractThirdPartyAuthController
         ]);
         $this->assertDatabaseHas('user_attributes', [
             'telegram_id' => $tgIdUser,
+        ]);
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => User::whereName($tgUsername)->first()->id,
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
         ]);
     }
 }

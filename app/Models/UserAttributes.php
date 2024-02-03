@@ -15,9 +15,11 @@ use Illuminate\Support\Carbon;
  * App\Models\UserAttributes
  *
  * @property-read User|null $user
+ *
  * @method static Builder|UserAttributes newModelQuery()
  * @method static Builder|UserAttributes newQuery()
  * @method static Builder|UserAttributes query()
+ *
  * @property int $id
  * @property int|null $google_id
  * @property int|null $telegram_id
@@ -25,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $fb_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @method static Builder|UserAttributes whereCreatedAt($value)
  * @method static Builder|UserAttributes whereFbId($value)
  * @method static Builder|UserAttributes whereGoogleId($value)
@@ -33,8 +36,11 @@ use Illuminate\Support\Carbon;
  * @method static Builder|UserAttributes whereUpdatedAt($value)
  * @method static Builder|UserAttributes whereVkId($value)
  * @method static Builder|UserAttributes whereGithubId($value)
+ *
  * @property string|null $github_id
+ *
  * @method static UserAttributesFactory factory($count = null, $state = [])
+ *
  * @mixin \Eloquent
  */
 class UserAttributes extends Model
