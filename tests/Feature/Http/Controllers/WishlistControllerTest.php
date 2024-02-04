@@ -119,4 +119,32 @@ class WishlistControllerTest extends TestCase
             'is_private' => 0,
         ]);
     }
+
+    public function test_auth_user_can_see_wishlist_from_another_user_public_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'is_private' => 0,
+        ]);
+        $userAuth = User::factory()->create();
+        $this->be($userAuth);
+
+        $response = $this->get('/wishlist/'.$user->name.'/'.$wishlist->slug);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_non_auth_user_can_see_wishlist_from_another_user_public_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'is_private' => 0,
+        ]);
+
+        $response = $this->get('/wishlist/'.$user->name.'/'.$wishlist->slug);
+
+        $response->assertStatus(200);
+    }
 }

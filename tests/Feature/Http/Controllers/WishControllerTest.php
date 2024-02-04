@@ -271,6 +271,52 @@ class WishControllerTest extends TestCase
         $this->assertNotNull(Wish::find($wish->id));
     }
 
+    public function test_auth_user_can_see_wish_from_another_user_public_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $user1 = User::factory()->create();
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'is_private' => 0,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $this->be($user1);
+        $response = $this->get('/wish/'.$user->name.'/'.$wish->slug);
+
+        $response->assertStatus(200);
+        $response->assertSee($wish->title);
+        $response->assertSee($wish->description);
+        $response->assertSee($wish->url);
+        $response->assertSee($wish->image_url);
+        $response->assertSee($wish->amount);
+        $response->assertSee($wish->currency);
+    }
+
+    public function test_non_auth_user_can_see_wish_from_another_user_public_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'is_private' => 0,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $response = $this->get('/wish/'.$user->name.'/'.$wish->slug);
+
+        $response->assertStatus(200);
+        $response->assertSee($wish->title);
+        $response->assertSee($wish->description);
+        $response->assertSee($wish->url);
+        $response->assertSee($wish->image_url);
+        $response->assertSee($wish->amount);
+        $response->assertSee($wish->currency);
+    }
+
     private function getNewCurrency(string $currency): string
     {
         if ($currency === 'RUB') {
