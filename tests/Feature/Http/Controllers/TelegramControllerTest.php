@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Feature\Http\Controllers;
+namespace Tests\Feature\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
-use Tests\Feature\Http\Controllers\AbstractThirdPartyAuthController;
 
 class TelegramControllerTest extends AbstractThirdPartyAuthController
 {
