@@ -17,6 +17,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@ryangjchandler/alpine-clipboard": "^2.3.0",
         "flowbite": "^2.2.1"
     }
 }
