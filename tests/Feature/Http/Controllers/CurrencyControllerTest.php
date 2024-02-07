@@ -3,9 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Currency;
-use Database\Factories\CurrencyFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CurrencyControllerTest extends TestCase

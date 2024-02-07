@@ -28,6 +28,8 @@ jobs:
         run: |
           mkdir -p database
           touch storage/database/database.sqlite
+      - name: Execute migrations
+        run: php artisan migrate --force
       - name: Execute laravel pint
         run: vendor/bin/pint
       - name: Execute phpstan

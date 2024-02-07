@@ -55,5 +55,5 @@ return [
     ],
     'currencybeacon' => [
         'api_key' => env('CURRENCYBEACON_API_KEY'),
-    ]
+    ],
 ];

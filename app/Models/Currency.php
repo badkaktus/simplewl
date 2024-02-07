@@ -44,6 +44,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Currency newModelQuery()
  * @method static Builder|Currency newQuery()
  * @method static Builder|Currency query()
+ *
  * @mixin Eloquent
  */
 class Currency extends Model

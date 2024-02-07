@@ -10,6 +10,6 @@ class CurrencyController extends Controller
 {
     public function __invoke(Request $request): Collection
     {
-        return Currency::select( ['id', 'name', 'short_code'])->orderBy('name')->get();
+        return Currency::select(['id', 'name', 'short_code'])->orderBy('name')->get();
     }
 }

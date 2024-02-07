@@ -6,15 +6,15 @@ namespace App\Services;
 
 use App\Models\Currency;
 use Illuminate\Support\Facades\Http;
-use JetBrains\PhpStorm\NoReturn;
 
 class CurrencyService
 {
     public function syncCurrencies(): void
     {
         $apiKey = config('services.currencybeacon.api_key');
-        if (!$apiKey) {
+        if (! $apiKey) {
             logger()->error('Currency beacon API key not found');
+
             return;
         }
 
@@ -24,6 +24,7 @@ class CurrencyService
 
         if ($collections->isEmpty()) {
             logger()->error('No currencies found');
+
             return;
         }
 

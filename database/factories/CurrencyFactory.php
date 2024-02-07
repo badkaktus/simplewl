@@ -20,7 +20,7 @@ class CurrencyFactory extends Factory
         return [
             'name' => $this->faker->word(),
             'short_code' => $this->faker->currencyCode(),
-            'code' => (string)$this->faker->numberBetween(1, 100),
+            'code' => (string) $this->faker->numberBetween(1, 100),
             'precision' => $this->faker->numberBetween(0, 4),
             'subunit' => $this->faker->numberBetween(50, 150),
             'symbol' => $this->faker->randomLetter(),
