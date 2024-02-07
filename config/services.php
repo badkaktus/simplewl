@@ -53,4 +53,7 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('GITHUB_REDIRECT_URI'),
     ],
+    'currencybeacon' => [
+        'api_key' => env('CURRENCYBEACON_API_KEY'),
+    ]
 ];

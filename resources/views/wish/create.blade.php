@@ -47,11 +47,8 @@
                                         <input id="amount" name="amount" type="number" autocomplete="amount" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                     </div>
                                 </div>
-                                <div>
-                                    <label for="currency" class="block font-medium leading-6 text-gray-900">Currency</label>
-                                    <div class="mt-2">
-                                        <input id="currency" name="currency" type="text" autocomplete="currency" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                    </div>
+                                <div class="pt-1">
+                                    <x-currency-select/>
                                 </div>
                             </div>
                         </div>
