@@ -29,6 +29,9 @@ jobs:
           mkdir -p database
           touch storage/database/database.sqlite
       - name: Execute migrations
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: storage/database/database.sqlite
         run: php artisan migrate --force
       - name: Execute laravel pint
         run: vendor/bin/pint
