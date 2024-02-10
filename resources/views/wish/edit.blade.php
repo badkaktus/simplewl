@@ -79,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="pt-1">
-                                <x-currency-select selectedCurrency="{{ $wish->currency }}"/>
+                                <x-currency-select selected-currency="{{ $wish->currency }}"/>
                             </div>
                         </div>
                     </div>

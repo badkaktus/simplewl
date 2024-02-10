@@ -3,7 +3,9 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Currency;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class CurrencyControllerTest extends TestCase
@@ -12,6 +14,9 @@ class CurrencyControllerTest extends TestCase
 
     public function testSuccess(): void
     {
+        $user = User::factory()->create();
+        $this->be($user);
+
         $currency1 = Currency::factory()->create();
         $currency2 = Currency::factory()->create();
         $currency3 = Currency::factory()->create();
@@ -50,5 +55,12 @@ class CurrencyControllerTest extends TestCase
             'name' => $currency3->name,
             'short_code' => $currency3->short_code,
         ]);
+    }
+
+    public function testNonAuthUser(): void
+    {
+        $response = $this->get('/currency/all');
+        $response->assertStatus(Response::HTTP_FOUND);
+        $response->assertRedirect('/login');
     }
 }

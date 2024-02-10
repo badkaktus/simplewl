@@ -89,10 +89,10 @@ class WishlistControllerTest extends TestCase
         ]);
         $this->be($user);
 
-        $response = $this->get('/wishlist/'.$user->name.'/'.$wishlist->slug.'/visibility');
+        $response = $this->post('/wishlist/'.$user->name.'/'.$wishlist->slug.'/visibility');
 
-        $response->assertStatus(ResponseAlias::HTTP_FOUND);
-        $response->assertRedirect('/wishlist/'.rawurlencode($user->name).'/'.$wishlist->slug);
+        $response->assertStatus(ResponseAlias::HTTP_OK);
+        $response->assertJson(['success' => true, 'isPrivate' => false]);
         $this->assertDatabaseHas(Wishlist::TABLE_NAME, [
             'user_id' => $user->id,
             'title' => $wishlist->title,
@@ -109,7 +109,7 @@ class WishlistControllerTest extends TestCase
         ]);
         $this->be($user);
 
-        $response = $this->get('/wishlist/'.$user->name.'/'.$wishlist->slug.'/visibility');
+        $response = $this->post('/wishlist/'.$user->name.'/'.$wishlist->slug.'/visibility');
 
         $response->assertStatus(ResponseAlias::HTTP_FORBIDDEN);
         $this->assertDatabaseHas(Wishlist::TABLE_NAME, [

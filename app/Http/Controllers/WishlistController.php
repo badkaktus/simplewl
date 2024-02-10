@@ -12,7 +12,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class WishlistController extends Controller
 {
@@ -58,14 +58,14 @@ class WishlistController extends Controller
         ChangeWishlistVisibilityRequest $request,
         string $username,
         string $slug
-    ): RedirectResponse {
+    ): JsonResponse {
         $user = $this->userService->getUserByName($username);
         if (is_null($user)) {
             throw new Exception('User not found');
         }
         $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user->id, $slug);
-        $this->wishlistService->changeVisibility($wishlist);
+        $updatedWishlist = $this->wishlistService->changeVisibility($wishlist);
 
-        return redirect()->route('wishlist.index', [$username, $slug]);
+        return response()->json(['success' => true, 'isPrivate' => $updatedWishlist->is_private]);
     }
 }
