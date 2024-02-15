@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-6 lg:py-8 px-8 md:px-40">
         <div>
-            <form method="POST" action="{{route('wish.store')}}">
+            <form method="POST" action="{{ route('wish.store') }}">
                 @csrf
                 <div class="space-y-12">
                     <div class="border-b border-gray-900/10 pb-12">
@@ -14,7 +14,13 @@
                                     <span class="text-red-300 text-sm">(required)</span>
                                 </label>
                                 <div class="mt-2">
-                                    <input id="title" name="title" type="text" autocomplete="title" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input
+                                        id="title"
+                                        name="title"
+                                        type="text"
+                                        autocomplete="title"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    >
                                 </div>
                             </div>
 

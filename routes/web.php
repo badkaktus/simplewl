@@ -7,6 +7,7 @@ use App\Http\Controllers\MyWishlistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\WishController;
+use App\Http\Controllers\WishDescriptionGenerateController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/{name}/{slug}/visibility', [WishlistController::class, 'changeVisibility'])
         ->name('wishlist.changeVisibility');
     Route::get('/currency/all', CurrencyController::class)->name('currency');
+
 });
+
+Route::post('/generate-description', WishDescriptionGenerateController::class)
+    ->name('generate.description');
 
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');
