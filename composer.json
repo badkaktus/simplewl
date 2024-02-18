@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/socialite": "^5.11",
         "laravel/tinker": "^2.8",
+        "openai-php/laravel": "^0.8.1",
         "sentry/sentry-laravel": "^4.1",
         "socialiteproviders/facebook": "^4.1",
         "socialiteproviders/github": "^4.1",

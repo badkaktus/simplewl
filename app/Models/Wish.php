@@ -83,4 +83,9 @@ class Wish extends Model
     {
         return (float) $this->amount;
     }
+
+    public function getEscapedDescription(): string
+    {
+        return str_replace("\n|\r", '', htmlentities($this->description));
+    }
 }
