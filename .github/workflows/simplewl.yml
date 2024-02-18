@@ -2,14 +2,16 @@ name: SimpleWl
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - '*'
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   tests:
-
     runs-on: ubuntu-latest
+    name: Run tests
 
     steps:
       - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -45,6 +47,7 @@ jobs:
 
   deploy:
     needs: tests
+    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     name: Deploy app to fly.io
     runs-on: ubuntu-latest
     steps:
