@@ -172,8 +172,8 @@ class WishControllerTest extends TestCase
 
         $this->assertSame(1, $wish->is_completed);
 
-        $response->assertStatus(302);
-        $response->assertRedirect(sprintf('/wish/%s/%s', rawurlencode($user->name), $wish->slug));
+        $response->assertStatus(200);
+        $response->assertExactJson(['isSuccess' => true]);
     }
 
     public function test_wish_delete_successfully(): void

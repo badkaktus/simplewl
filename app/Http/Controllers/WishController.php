@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -63,14 +64,12 @@ class WishController extends Controller
         ]);
     }
 
-    public function complete(string $wishSlug): RedirectResponse
+    public function complete(string $wishSlug): JsonResponse
     {
-        $wish = $this->wishService->changeCompletedStatus($wishSlug);
+        $this->wishService->changeCompletedStatus($wishSlug);
 
-        return Redirect::route('wish.show', [
-            'user' => $wish->wishlist->user->name,
-            'wish' => $wish,
-        ]);
+        return response()->json(['isSuccess' => true]);
+
     }
 
     public function destroy(DestroyWishRequest $request, Wish $wish): RedirectResponse
