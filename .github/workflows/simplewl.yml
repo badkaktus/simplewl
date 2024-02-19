@@ -50,10 +50,10 @@ jobs:
     if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
     name: Deploy app to fly.io
     runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - run: flyctl ssh console --command 'php artisan route:cache'
