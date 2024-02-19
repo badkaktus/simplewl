@@ -24,11 +24,12 @@
                         </div>
                         @if(Auth::check() && Auth::user()->id === $wish->wishlist->user_id)
                             <div class="flex justify-end gap-x-1">
+
                                 @if(!$wish->is_completed)
-                                    <div class="font-medium">
-                                        <form method="POST" action="{{ route('wish.complete',  $wish->slug) }}">
-                                            @csrf
-                                            <button type="submit"
+                                    <div class="font-medium" x-data="{ showButton: true }">
+                                            <button
+                                                    x-show="showButton"
+                                                    @click="toggleCompleteState"
                                                     class="rounded-full w-10 h-10 hover:bg-gray-200 bg-green-300 p-0 border-0 inline-flex items-center justify-center hover:text-gray-500 ml-4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5"
                                                      viewBox="0 0 448 512">
@@ -37,8 +38,19 @@
                                                         d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
                                                 </svg>
                                             </button>
-                                        </form>
-
+                                        <script>
+                                            function toggleCompleteState() {
+                                                axios.post('{{ route('wish.complete',  $wish->slug) }}')
+                                                    .then(response => {
+                                                        if (response.data.isSuccess) {
+                                                            this.showButton = false;
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.log(error);
+                                                    });
+                                            }
+                                        </script>
                                     </div>
                                 @endif
                                 <div>
@@ -53,7 +65,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <form method="POST" action="{{route('wish.destroy',  $wish->slug)}}">
+                                    <form method="POST" action="{{ route('wish.destroy',  $wish->slug) }}">
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit"

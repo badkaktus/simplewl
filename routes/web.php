@@ -47,10 +47,9 @@ Route::middleware('auth')->group(function () {
         ->name('wishlist.changeVisibility');
     Route::get('/currency/all', CurrencyController::class)->name('currency');
 
+    Route::post('/generate-description', WishDescriptionGenerateController::class)
+        ->name('generate.description');
 });
-
-Route::post('/generate-description', WishDescriptionGenerateController::class)
-    ->name('generate.description');
 
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');
