@@ -55,5 +55,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Check and start machine
+        run: |
+          if [ -n "${{ secrets.MACHINE_ID }}" ]; then
+            echo "Machine ID exists. Checking machine status..."
+            status=$(flyctl machine status ${{ secrets.MACHINE_ID }} | grep 'State:')
+            echo "Machine Status: $status"
+
+            if [[ "$status" == *"stopped"* ]]; then
+              echo "Machine is stopped. Starting the machine..."
+              flyctl machine start ${{ secrets.MACHINE_ID }}
+            else
+              echo "Machine is not stopped. No action required."
+            fi
+          else
+            echo "Machine ID does not exist. No action required."
+          fi
       - run: flyctl deploy --remote-only
       - run: flyctl ssh console --command 'php artisan route:cache'
