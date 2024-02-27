@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\WishFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property int $is_completed
  * @property string|null $slug
+ * @property string|null $local_file_name
  * @property-read Wishlist $wishlist
  *
  * @method static Builder|Wish newModelQuery()
@@ -37,6 +39,7 @@ use Illuminate\Support\Str;
  * @method static Builder|Wish whereId($value)
  * @method static Builder|Wish whereImageUrl($value)
  * @method static Builder|Wish whereIsCompleted($value)
+ * @method static Builder|Wish whereLocalFileName($value)
  * @method static Builder|Wish whereSlug($value)
  * @method static Builder|Wish whereTitle($value)
  * @method static Builder|Wish whereUpdatedAt($value)
@@ -44,7 +47,7 @@ use Illuminate\Support\Str;
  * @method static Builder|Wish whereWishlistId($value)
  * @method static WishFactory factory($count = null, $state = [])
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Wish extends Model
 {
@@ -62,6 +65,7 @@ class Wish extends Model
         'currency',
         'is_completed',
         'slug',
+        'local_file_name',
     ];
 
     public function wishlist(): BelongsTo

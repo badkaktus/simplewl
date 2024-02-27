@@ -16,6 +16,7 @@ class WishRepository
         ?string $desc = null,
         ?string $url = null,
         ?string $imageUrl = null,
+        ?string $localFileName = null,
         ?float $amount = null,
         ?string $currency = null
     ): Wish {
@@ -26,6 +27,7 @@ class WishRepository
             'description' => $desc,
             'url' => $url,
             'image_url' => $imageUrl,
+            'local_file_name' => $localFileName,
             'amount' => $amount,
             'currency' => $currency,
         ]);
