@@ -13,6 +13,8 @@ use App\Repositories\WishlistRepository;
 use App\Repositories\WishRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WishService
@@ -38,6 +40,8 @@ class WishService
             Wishlist::DEFAULT_WISHLIST_SLUG
         );
 
+        $localImageName = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
+
         return $this->wishRepository->create(
             $request->title,
             $wishlist->id,
@@ -45,6 +49,7 @@ class WishService
             $request->description ?? null,
             $request->url ?? null,
             $request->image_url ?? null,
+            $localImageName,
             $request->amount ? $request->float('amount') : null,
             $request->currency ?? null
         );
@@ -105,5 +110,26 @@ class WishService
     public function deleteWish(Wish $wish): void
     {
         $wish->delete();
+    }
+
+    private function saveImageToLocal(string $imageUrl): ?string
+    {
+        $response = Http::get($imageUrl);
+        if ($response->failed()) {
+            return null;
+        }
+
+        $position = strpos($imageUrl, '?');
+        if ($position !== false) {
+            $imageUrl = substr($imageUrl, 0, $position);
+        }
+
+        $extension = pathinfo($imageUrl, PATHINFO_EXTENSION);
+
+        $filename = 'wishes/'.uniqid('image_', true).'.'.$extension;
+
+        Storage::disk('public')->put($filename, $response->body());
+
+        return $filename;
     }
 }

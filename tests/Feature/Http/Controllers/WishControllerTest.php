@@ -5,6 +5,8 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\User;
 use App\Models\Wish;
 use App\Models\Wishlist;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class WishControllerTest extends TestCase
@@ -23,6 +25,8 @@ class WishControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $this->be($user);
+
+        Storage::fake('public');
 
         $title = fake()->words(5, true);
         $description = fake()->paragraph(2);
@@ -47,6 +51,7 @@ class WishControllerTest extends TestCase
         $this->assertSame($imageUrl, $wish->image_url);
         $this->assertSame(100.00, $wish->getAmount());
         $this->assertSame('EUR', $wish->currency);
+        Storage::disk('public')->assertExists($wish->local_file_name);
 
         $response->assertStatus(302);
         $response->assertRedirect(sprintf('/wishlist/%s/%s', rawurlencode($user->name), $wish->wishlist->slug));
