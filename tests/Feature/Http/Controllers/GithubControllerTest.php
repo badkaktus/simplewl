@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserAttributes;
 use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 class GithubControllerTest extends AbstractThirdPartyAuthController
 {
@@ -63,5 +64,14 @@ class GithubControllerTest extends AbstractThirdPartyAuthController
         $response = $this->get('/auth/github/callback');
         $response->assertStatus(302);
         $response->assertRedirect(RouteServiceProvider::HOME);
+    }
+
+    public function test_failed_validation(): void
+    {
+        $response = $this->get('/auth/github/callback');
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertExactJson([
+            'error' => 'Invalid request',
+        ]);
     }
 }

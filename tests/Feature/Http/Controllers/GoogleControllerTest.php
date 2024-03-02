@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserAttributes;
 use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 class GoogleControllerTest extends AbstractThirdPartyAuthController
 {
@@ -84,6 +85,15 @@ class GoogleControllerTest extends AbstractThirdPartyAuthController
 
         $this->assertDatabaseHas('user_attributes', [
             'google_id' => $googleIdUser,
+        ]);
+    }
+
+    public function test_failed_validation(): void
+    {
+        $response = $this->get('/auth/google/callback');
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertExactJson([
+            'error' => 'Invalid request',
         ]);
     }
 }

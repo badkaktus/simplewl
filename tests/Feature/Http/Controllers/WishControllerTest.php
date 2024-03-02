@@ -5,7 +5,6 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\User;
 use App\Models\Wish;
 use App\Models\Wishlist;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
