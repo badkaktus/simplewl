@@ -7,8 +7,10 @@ namespace App\Http\Controllers;
 use App\Providers\RouteServiceProvider;
 use App\Services\Auth\Github;
 use Auth;
+use Illuminate\Http\JsonResponse;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class GithubController extends Controller
 {
@@ -17,9 +19,13 @@ class GithubController extends Controller
         return Socialite::driver('github')->redirect();
     }
 
-    public function handleGithubCallback(): RedirectResponse
+    public function handleGithubCallback(): RedirectResponse|JsonResponse
     {
-        $githubUser = Socialite::driver('github')->user();
+        try {
+            $githubUser = Socialite::driver('github')->user();
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
+        }
 
         $user = (new Github())->findUser($githubUser);
 

@@ -7,6 +7,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\User;
 use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 class TelegramControllerTest extends AbstractThirdPartyAuthController
 {
@@ -30,6 +31,15 @@ class TelegramControllerTest extends AbstractThirdPartyAuthController
         $this->assertDatabaseHas('wishlists', [
             'user_id' => User::whereName($tgUsername)->first()->id,
             'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
+        ]);
+    }
+
+    public function test_failed_validation(): void
+    {
+        $response = $this->get('/auth/telegram/callback');
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertExactJson([
+            'error' => 'Invalid request',
         ]);
     }
 }
