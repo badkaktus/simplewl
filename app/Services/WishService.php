@@ -58,7 +58,7 @@ class WishService
     public function updateWish(UpdateWishRequest $request, string $slug): Wish
     {
         $wish = $this->wishRepository->getWishBySlugAndUserId($slug, Auth::id());
-
+        // todo add check for image_url and if it is changed, save new image to local
         $wish->update([
             'title' => $request->title,
             'description' => $request->description ?? null,
