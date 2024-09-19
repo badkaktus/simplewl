@@ -41,7 +41,7 @@ class WishService
         );
 
         $localImageName = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
-
+//        $request->float('amount')
         return $this->wishRepository->create(
             $request->title,
             $wishlist->id,
@@ -50,7 +50,7 @@ class WishService
             $request->url ?? null,
             $request->image_url ?? null,
             $localImageName,
-            $request->amount ? $request->float('amount') : null,
+            $request->amount ? floatval($request->amount) : null,
             $request->currency ?? null
         );
     }
@@ -58,8 +58,8 @@ class WishService
     public function updateWish(UpdateWishRequest $request, string $slug): Wish
     {
         $wish = $this->wishRepository->getWishBySlugAndUserId($slug, Auth::id());
-        // todo add check for image_url and if it is changed, save new image to local
-        $wish->update([
+
+        $updatedFields = [
             'title' => $request->title,
             'description' => $request->description ?? null,
             'url' => $request->url ?? null,
@@ -67,7 +67,13 @@ class WishService
             'amount' => $request->amount ? $request->float('amount') : null,
             'currency' => $request->currency ?? null,
             'slug' => Str::slug($request->title),
-        ]);
+        ];
+
+        if ($request->image_url !== $wish->image_url) {
+            $updatedFields['local_file_name'] = $this->saveImageToLocal($request->image_url);
+        }
+
+        $wish->update($updatedFields);
 
         return $wish;
     }
@@ -119,17 +125,27 @@ class WishService
             return null;
         }
 
-        $position = strpos($imageUrl, '?');
-        if ($position !== false) {
-            $imageUrl = substr($imageUrl, 0, $position);
-        }
-
-        $extension = pathinfo($imageUrl, PATHINFO_EXTENSION);
-
+        $extension = $this->getExtensionFromContentType($response->header('Content-Type'));
         $filename = 'wishes/'.uniqid('image_', true).'.'.$extension;
 
         Storage::disk('public')->put($filename, $response->body());
 
         return $filename;
+    }
+
+    /**
+     * @param string $contentType
+     * @return string
+     */
+    private function getExtensionFromContentType(string $contentType): string
+    {
+        $mimeTypes = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/svg+xml' => 'svg',
+        ];
+
+        return $mimeTypes[$contentType] ?? 'jpg';
     }
 }
