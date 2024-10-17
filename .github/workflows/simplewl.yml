@@ -73,4 +73,3 @@ jobs:
           fi
       - run: flyctl deploy --remote-only
       - run: flyctl ssh console --command 'php artisan route:cache'
-      - run: flyctl ssh console --command 'php artisan storage:link'
