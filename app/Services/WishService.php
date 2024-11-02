@@ -23,8 +23,7 @@ class WishService
         private readonly WishRepository $wishRepository,
         private readonly WishlistRepository $wishlistRepository,
         private readonly UserService $userService
-    ) {
-    }
+    ) {}
 
     public function createWish(StoreWishRequest $request): Wish
     {
@@ -41,7 +40,8 @@ class WishService
         );
 
         $localImageName = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
-//        $request->float('amount')
+
+        //        $request->float('amount')
         return $this->wishRepository->create(
             $request->title,
             $wishlist->id,
@@ -133,10 +133,6 @@ class WishService
         return $filename;
     }
 
-    /**
-     * @param string $contentType
-     * @return string
-     */
     private function getExtensionFromContentType(string $contentType): string
     {
         $mimeTypes = [

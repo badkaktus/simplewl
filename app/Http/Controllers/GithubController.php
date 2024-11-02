@@ -27,7 +27,7 @@ class GithubController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Github())->findUser($githubUser);
+        $user = (new Github)->findUser($githubUser);
 
         Auth::login($user);
 

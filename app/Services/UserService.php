@@ -9,9 +9,7 @@ use App\Repositories\UserRepository;
 
 class UserService
 {
-    public function __construct(private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(private readonly UserRepository $userRepository) {}
 
     public function getUserByName(string $name): ?User
     {

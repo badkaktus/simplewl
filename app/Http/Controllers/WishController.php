@@ -19,9 +19,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class WishController extends Controller
 {
-    public function __construct(private readonly WishService $wishService)
-    {
-    }
+    public function __construct(private readonly WishService $wishService) {}
 
     public function create(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {

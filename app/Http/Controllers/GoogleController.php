@@ -25,7 +25,7 @@ class GoogleController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Google())->findUser($googleUser);
+        $user = (new Google)->findUser($googleUser);
 
         Auth::login($user);
 

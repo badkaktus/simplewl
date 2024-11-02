@@ -8,9 +8,7 @@ use App\Repositories\WishlistRepository;
 
 class WishlistService
 {
-    public function __construct(private readonly WishlistRepository $wishlistRepository)
-    {
-    }
+    public function __construct(private readonly WishlistRepository $wishlistRepository) {}
 
     public function createWishlist(User $user, ?string $title = null, ?string $slug = null): Wishlist
     {

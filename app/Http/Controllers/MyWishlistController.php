@@ -16,8 +16,7 @@ class MyWishlistController extends Controller
     public function __construct(
         private readonly WishService $wishService,
         private readonly WishlistService $wishlistService,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws TryToOpenPrivateWishlist

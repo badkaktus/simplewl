@@ -22,7 +22,7 @@ class TelegramController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Telegram())->findUser($telegramUser);
+        $user = (new Telegram)->findUser($telegramUser);
 
         Auth::login($user);
 
