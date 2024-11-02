@@ -23,7 +23,7 @@ class GptResponseDTO implements \JsonSerializable
 
     public static function createSuccess(string $response): self
     {
-        $dto = new self();
+        $dto = new self;
         $dto->response = $response;
         $dto->isSuccess = true;
 
@@ -32,7 +32,7 @@ class GptResponseDTO implements \JsonSerializable
 
     public static function createFailed(string $errorMessage): self
     {
-        $dto = new self();
+        $dto = new self;
         $dto->errorMessage = $errorMessage;
         $dto->isSuccess = false;
 

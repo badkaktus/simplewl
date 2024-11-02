@@ -5,9 +5,9 @@
         </div>
 
         <x-wishlist-visible-button :user="$user" :wishlist="$wishlist"/>
-
+{{--@dd($wishlist->toArray())--}}
         <div class="pt-1">
-            <x-share-page/>
+            <x-share-page :wishlist="$wishlist"/>
         </div>
     </div>
     <div class="flex flex-wrap -m-4">

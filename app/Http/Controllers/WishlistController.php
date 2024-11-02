@@ -20,8 +20,7 @@ class WishlistController extends Controller
         private readonly WishService $wishService,
         private readonly UserService $userService,
         private readonly WishlistService $wishlistService,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws TryToOpenPrivateWishlist

@@ -10,9 +10,7 @@ use Illuminate\View\Component;
 
 class WishlistVisibleButton extends Component
 {
-    public function __construct(public User $user, public Wishlist $wishlist)
-    {
-    }
+    public function __construct(public User $user, public Wishlist $wishlist) {}
 
     public function render(): View|Closure|string
     {

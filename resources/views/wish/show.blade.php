@@ -115,7 +115,7 @@
                                 </div>
                             @endif
 
-                                <x-share-page/>
+                                <x-share-page :wish="$wish"/>
                         </div>
                     </div>
                 </div>

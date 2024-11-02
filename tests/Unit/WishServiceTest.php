@@ -26,8 +26,7 @@ class WishServiceTest extends TestCase
         ?string $image_url,
         ?float $amount,
         ?string $currency
-    ): void
-    {
+    ): void {
         $imageContent = 'fake_image_content';
         Http::fake([
             $image_url => Http::response($imageContent, 200, ['Content-Type' => 'image/jpeg']),
@@ -58,7 +57,6 @@ class WishServiceTest extends TestCase
 
         Storage::disk('public')->assertExists($wish->local_file_name);
     }
-
 
     public static function wishDataProvider(): array
     {

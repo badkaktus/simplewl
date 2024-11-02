@@ -8,9 +8,7 @@ use Illuminate\Http\JsonResponse;
 
 class WishDescriptionGenerateController extends Controller
 {
-    public function __construct(private readonly GptService $gptService)
-    {
-    }
+    public function __construct(private readonly GptService $gptService) {}
 
     public function __invoke(GenerateGptDescriptionRequest $request): JsonResponse
     {
