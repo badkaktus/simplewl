@@ -6,10 +6,13 @@ namespace Tests\Unit;
 
 use App\Http\Requests\StoreWishRequest;
 use App\Models\User;
+use App\Models\Wish;
+use App\Models\Wishlist;
 use App\Services\WishService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class WishServiceTest extends TestCase
@@ -56,6 +59,43 @@ class WishServiceTest extends TestCase
         ]);
 
         Storage::disk('public')->assertExists($wish->local_file_name);
+    }
+
+    public function test_check_increment_slug(): void
+    {
+        $wishlist = Wishlist::factory()->create([
+            'title' => Wishlist::DEFAULT_WISHLIST_TITLE,
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
+        ]);
+        $this->be($wishlist->user);
+
+        $title = fake()->words(3, true);
+
+        Wish::factory()->create([
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        Wish::factory()->create([
+            'title' => $title,
+            'slug' => Str::slug($title).'-2',
+            'wishlist_id' => $wishlist->id,
+        ]);
+
+        $storeWishRequest = $this->createMock(StoreWishRequest::class);
+        $storeWishRequest->title = $title;
+        $storeWishRequest->description = fake()->text;
+        $storeWishRequest->amount = fake()->randomFloat(2, 1, 1000);
+        $storeWishRequest->currency = fake()->currencyCode;
+
+        $wish = app(WishService::class)->createWish($storeWishRequest);
+
+        $this->assertInstanceOf(Wish::class, $wish);
+        $this->assertDatabaseHas('wishes', [
+            'title' => $title,
+            'slug' => Str::slug($title).'-3',
+        ]);
     }
 
     public static function wishDataProvider(): array
