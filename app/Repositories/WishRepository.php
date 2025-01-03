@@ -57,4 +57,11 @@ class WishRepository
             ->orderBy('created_at', 'desc')
             ->get();
     }
+
+    public function getWishBySlugAndWishlistId(string $slug, int $wishlistId): ?Wish
+    {
+        return Wish::where('slug', $slug)
+            ->where('wishlist_id', $wishlistId)
+            ->first();
+    }
 }

@@ -41,11 +41,10 @@ class WishService
 
         $localImageName = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
 
-        //        $request->float('amount')
         return $this->wishRepository->create(
             $request->title,
             $wishlist->id,
-            Str::slug($request->title),
+            $this->getSlugForWish($request->title, $wishlist->id),
             $request->description ?? null,
             $request->url ?? null,
             $request->image_url ?? null,
@@ -66,8 +65,11 @@ class WishService
             'image_url' => $request->image_url ?? null,
             'amount' => $request->amount ? $request->float('amount') : null,
             'currency' => $request->currency ?? null,
-            'slug' => Str::slug($request->title),
         ];
+
+        if ($wish->title !== $request->title) {
+            $updatedFields['slug'] = $this->getSlugForWish($request->title, $wish->wishlist_id);
+        }
 
         if ($request->image_url !== $wish->image_url) {
             $updatedFields['local_file_name'] = $this->saveImageToLocal($request->image_url);
@@ -143,5 +145,21 @@ class WishService
         ];
 
         return $mimeTypes[$contentType] ?? 'jpg';
+    }
+
+    private function getSlugForWish(string $title, int $wishlistId): string
+    {
+        if (! $wish = $this->wishRepository->getWishBySlugAndWishlistId(Str::slug($title), $wishlistId)) {
+            return Str::slug($title);
+        }
+
+        $i = 2;
+        while ($wish) {
+            $slug = Str::slug($title).'-'.$i;
+            $wish = $this->wishRepository->getWishBySlugAndWishlistId($slug, $wishlistId);
+            $i++;
+        }
+
+        return $slug;
     }
 }
