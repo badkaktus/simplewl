@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\User;
 use App\Models\Wish;
 use App\Models\Wishlist;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -26,11 +27,14 @@ class WishControllerTest extends TestCase
         $this->be($user);
 
         Storage::fake('public');
+        $imageUrl = fake()->imageUrl();
+        Http::fake([
+            $imageUrl => Http::response('fake_image_content', 200, ['Content-Type' => 'image/jpeg']),
+        ]);
 
         $title = fake()->words(5, true);
         $description = fake()->paragraph(2);
         $url = fake()->url;
-        $imageUrl = fake()->imageUrl();
 
         $response = $this->post('/wish', [
             'title' => $title,
@@ -135,6 +139,9 @@ class WishControllerTest extends TestCase
         $description = fake()->paragraph(2);
         $url = fake()->url;
         $imageUrl = fake()->imageUrl();
+        Http::fake([
+            $imageUrl => Http::response('fake_image_content', 200, ['Content-Type' => 'image/jpeg']),
+        ]);
 
         $response = $this->put('/wish/'.$wish->slug, [
             'title' => $title,
