@@ -12,7 +12,7 @@ class CurrencyControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testSuccess(): void
+    public function test_success(): void
     {
         $user = User::factory()->create();
         $this->be($user);
@@ -57,7 +57,7 @@ class CurrencyControllerTest extends TestCase
         ]);
     }
 
-    public function testNonAuthUser(): void
+    public function test_non_auth_user(): void
     {
         $response = $this->get('/currency/all');
         $response->assertStatus(Response::HTTP_FOUND);
