@@ -36,13 +36,14 @@ class WishServiceTest extends TestCase
         ]);
         Storage::fake('public');
 
-        $storeWishRequest = $this->createMock(StoreWishRequest::class);
-        $storeWishRequest->title = $title;
-        $storeWishRequest->description = $description;
-        $storeWishRequest->url = $url;
-        $storeWishRequest->image_url = $image_url;
-        $storeWishRequest->amount = $amount;
-        $storeWishRequest->currency = $currency;
+        $storeWishRequest = StoreWishRequest::create('/wishes', 'POST', [
+            'title' => $title,
+            'description' => $description,
+            'url' => $url,
+            'image_url' => $image_url,
+            'amount' => $amount,
+            'currency' => $currency,
+        ]);
 
         $user = User::factory()->create();
         $this->be($user);
@@ -83,11 +84,12 @@ class WishServiceTest extends TestCase
             'wishlist_id' => $wishlist->id,
         ]);
 
-        $storeWishRequest = $this->createMock(StoreWishRequest::class);
-        $storeWishRequest->title = $title;
-        $storeWishRequest->description = fake()->text;
-        $storeWishRequest->amount = fake()->randomFloat(2, 1, 1000);
-        $storeWishRequest->currency = fake()->currencyCode;
+        $storeWishRequest = StoreWishRequest::create('/wishes', 'POST', [
+            'title' => $title,
+            'description' => fake()->text,
+            'amount' => fake()->randomFloat(2, 1, 1000),
+            'currency' => fake()->currencyCode,
+        ]);
 
         $wish = app(WishService::class)->createWish($storeWishRequest);
 
