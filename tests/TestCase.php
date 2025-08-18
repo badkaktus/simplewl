@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, RefreshDatabase; //, DatabaseMigrations;
+    use CreatesApplication, RefreshDatabase; // , DatabaseMigrations;
 
     protected function setUp(): void
     {
