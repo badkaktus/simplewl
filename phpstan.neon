@@ -15,7 +15,7 @@ parameters:
         - bootstrap/cache/
         - storage/
         - vendor/
-        - node_modules/
+        - node_modules/ (?)
         - public/
 
     # Игнорировать определенные ошибки
