@@ -25,8 +25,8 @@ class MyWishlistController extends Controller
     {
         $user = Auth::user();
         // todo set slug, when custom wishlist was added
-        $wishes = $this->wishService->getWishesByUserAndSlug($user->name, null);
-        $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user->id, Wishlist::DEFAULT_WISHLIST_SLUG);
+        $wishes = $this->wishService->getWishesByUserAndSlug($user?->name, null);
+        $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user?->id, Wishlist::DEFAULT_WISHLIST_SLUG);
 
         return view(
             'wishlist.index',
