@@ -13,4 +13,5 @@ elif [ ! -f "$DATABASE_FILE" ]; then
     touch "$DATABASE_FILE"
 fi
 cd /var/www/html
+echo "Running migrations..."
 php artisan migrate --force
