@@ -2,16 +2,27 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
+    level: 5
     paths:
         - app/
+        - config/
+        - database/
+        - routes/
+        - tests/
 
-    # Level 9 is the highest level
-    level: 5
+    # Исключения для файлов/папок
+    excludePaths:
+        - bootstrap/cache/
+        - storage/
+        - vendor/
+        - node_modules/
+        - public/
 
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
-#
-#    excludePaths:
-#        - ./*/*/FileToBeExcluded.php
-#
-#    checkMissingIterableValueType: false
+    # Игнорировать определенные ошибки
+    ignoreErrors:
+        # Игнорировать ошибки для фасадов Laravel
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Call to an undefined method Illuminate\\Database\\Query\\Builder#'
+
+    # Laravel специфичные настройки
+    reportUnmatchedIgnoredErrors: false

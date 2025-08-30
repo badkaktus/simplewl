@@ -13,15 +13,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class WishServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @dataProvider wishDataProvider
-     */
+    #[DataProvider('wishDataProvider')]
     public function test_create_wish_from_request(
         string $title,
         ?string $description,

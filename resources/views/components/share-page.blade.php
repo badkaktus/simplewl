@@ -1,14 +1,16 @@
 @php
     use App\Http\Controllers\WishlistController;
     use App\Http\Controllers\WishController;
+    use App\Models\Wish;
+    use App\Models\Wishlist;
 
     $url = URL::current();
-
-    if ($wishlist->exists) {
+    /** @var Wishlist|null $wishlist */
+    if ($wishlist instanceof Wishlist && $wishlist->exists) {
         $url = action([WishlistController::class, 'index'], ['name' => $wishlist->user->name]);
     }
-
-    if ($wish->exists) {
+    /** @var Wish|null $wish */
+    if ($wish instanceof Wish && $wish->exists) {
         $url = action([WishController::class, 'show'], ['user' => $wish->wishlist->user->name, 'wish' => $wish->slug]);
     }
 @endphp
