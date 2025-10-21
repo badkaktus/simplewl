@@ -1,110 +1,93 @@
 services:
-    laravel.test:
+    # Основное приложение Laravel с FrankenPHP
+    app:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.2
+            context: .
             dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.2/app
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
+            target: production
+        container_name: laravel_app
+        restart: unless-stopped
         ports:
-            - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+            # Используем нестандартные порты, чтобы не конфликтовать с Caddy
+            - "127.0.0.1:8000:8000"   # Основной порт приложения (только localhost)
+            - "127.0.0.1:8080:8080"   # Health check
         environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            # Основные настройки Laravel
+            APP_NAME: ${APP_NAME:-Laravel}
+            APP_ENV: ${APP_ENV:-production}
+            APP_KEY: ${APP_KEY}
+            APP_DEBUG: ${APP_DEBUG:-false}
+            APP_URL: ${APP_URL:-https://yourdomain.com}
+
+            # Настройки базы данных (SQLite по умолчанию)
+            DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+            DB_DATABASE: ${DB_DATABASE:-/app/database/database.sqlite}
+
+            # Настройки кеша
+            CACHE_DRIVER: ${CACHE_DRIVER:-redis}
+            SESSION_DRIVER: ${SESSION_DRIVER:-redis}
+            QUEUE_CONNECTION: ${QUEUE_CONNECTION:-redis}
+
+            # Redis настройки
+            REDIS_HOST: redis
+            REDIS_PASSWORD: ${REDIS_PASSWORD:-null}
+            REDIS_PORT: 6379
+
+            # Настройки почты
+            MAIL_MAILER: ${MAIL_MAILER:-smtp}
+            MAIL_HOST: ${MAIL_HOST}
+            MAIL_PORT: ${MAIL_PORT:-587}
+            MAIL_USERNAME: ${MAIL_USERNAME}
+            MAIL_PASSWORD: ${MAIL_PASSWORD}
+            MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+            MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+            MAIL_FROM_NAME: "${MAIL_FROM_NAME:-Laravel}"
+
+            # Настройки trusted proxies для работы за reverse proxy
+            TRUSTED_PROXIES: "*"  # В production укажите IP вашего Caddy сервера
+
+            LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+            LOG_LEVEL: ${LOG_LEVEL:-error}
         volumes:
-            - '.:/var/www/html'
+            - ./storage:/app/storage
+            - ./storage/database:/app/storage/database
+            # Для разработки (раскомментируйте при необходимости)
+            # - .:/app
         networks:
-            - sail
+            - laravel_network
         depends_on:
-            - mysql
             - redis
-            - meilisearch
-            - mailpit
-            - selenium
-    mysql:
-        image: 'mysql/mysql-server:8.0'
-        ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
-        environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_HOST: '%'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
-        volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
-        networks:
-            - sail
         healthcheck:
-            test:
-                - CMD
-                - mysqladmin
-                - ping
-                - '-p${DB_PASSWORD}'
+            test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+            interval: 30s
+            timeout: 10s
             retries: 3
-            timeout: 5s
+            start_period: 40s
+
     redis:
-        image: 'redis:alpine'
+        image: redis:7-alpine
+        container_name: laravel_redis
+        restart: unless-stopped
+        command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-yourredispassword}
         ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
+            - "127.0.0.1:6379:6379"  # localhost
         volumes:
-            - 'sail-redis:/data'
+            - redis_data:/data
         networks:
-            - sail
+            - laravel_network
         healthcheck:
-            test:
-                - CMD
-                - redis-cli
-                - ping
-            retries: 3
+            test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-yourredispassword}", "ping"]
+            interval: 10s
             timeout: 5s
-    meilisearch:
-        image: 'getmeili/meilisearch:latest'
-        ports:
-            - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
-        volumes:
-            - 'sail-meilisearch:/meili_data'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - wget
-                - '--no-verbose'
-                - '--spider'
-                - 'http://localhost:7700/health'
             retries: 3
-            timeout: 5s
-    mailpit:
-        image: 'axllent/mailpit:latest'
-        ports:
-            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
-            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
-        networks:
-            - sail
-    selenium:
-        image: seleniarm/standalone-chromium
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        volumes:
-            - '/dev/shm:/dev/shm'
-        networks:
-            - sail
-networks:
-    sail:
-        driver: bridge
+
 volumes:
-    sail-mysql:
+    redis_data:
         driver: local
-    sail-redis:
-        driver: local
-    sail-meilisearch:
-        driver: local
+
+networks:
+    laravel_network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.20.0.0/24

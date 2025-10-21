@@ -1,100 +1,251 @@
-# syntax = docker/dockerfile:experimental
+FROM dunglas/frankenphp:1.9-php8.4-alpine AS frankenphp_upstream
 
-# Default to PHP 8.2, but we attempt to match
-# the PHP version from the user (wherever `flyctl launch` is run)
-# Valid version values are PHP 7.4+
-ARG PHP_VERSION=8.2
-ARG NODE_VERSION=18
-FROM fideloper/fly-laravel:${PHP_VERSION} as base
+FROM frankenphp_upstream AS builder
 
-# PHP_VERSION needs to be repeated here
-# See https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
-ARG PHP_VERSION
+RUN apk add --no-cache \
+    git \
+    nodejs \
+    npm \
+    sqlite-dev \
+    sqlite \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libzip-dev
 
-LABEL fly_launch_runtime="laravel"
+RUN docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_sqlite \
+        gd \
+        opcache \
+        zip \
+        bcmath \
+        pcntl \
+        exif
 
-# pecl install
-RUN apt-get update \
-    && apt-get install -y php${PHP_VERSION}-dev php-pear \
-    && pecl channel-update pecl.php.net \
-    && pecl install excimer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# copy application code, skipping files based on .dockerignore
-COPY . /var/www/html
-
-RUN composer install --optimize-autoloader --no-dev \
-    && mkdir -p storage/logs \
-    && php artisan optimize:clear \
-    && php artisan storage:link \
-    && chown -R www-data:www-data /var/www/html \
-    && sed -i 's/protected \$proxies/protected \$proxies = "*"/g' app/Http/Middleware/TrustProxies.php \
-    && echo "MAILTO=\"\"\n* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run" > /etc/cron.d/laravel \
-    && cp .fly/entrypoint.sh /entrypoint \
-    && chmod +x /entrypoint
-
-# If we're using Octane...
-RUN if grep -Fq "laravel/octane" /var/www/html/composer.json; then \
-        rm -rf /etc/supervisor/conf.d/fpm.conf; \
-        if grep -Fq "spiral/roadrunner" /var/www/html/composer.json; then \
-            mv /etc/supervisor/octane-rr.conf /etc/supervisor/conf.d/octane-rr.conf; \
-            if [ -f ./vendor/bin/rr ]; then ./vendor/bin/rr get-binary; fi; \
-            rm -f .rr.yaml; \
-        else \
-            mv .fly/octane-swoole /etc/services.d/octane; \
-            mv /etc/supervisor/octane-swoole.conf /etc/supervisor/conf.d/octane-swoole.conf; \
-        fi; \
-        rm /etc/nginx/sites-enabled/default; \
-        ln -sf /etc/nginx/sites-available/default-octane /etc/nginx/sites-enabled/default; \
-    fi
-
-# Multi-stage build: Build static assets
-# This allows us to not include Node within the final container
-FROM node:${NODE_VERSION} as node_modules_go_brrr
-
-RUN mkdir /app
-
-RUN mkdir -p  /app
 WORKDIR /app
+
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --optimize-autoloader
+
+COPY package*.json ./
+
+RUN npm ci --only=production
+
 COPY . .
-COPY --from=base /var/www/html/vendor /app/vendor
 
-# Use yarn or npm depending on what type of
-# lock file we might find. Defaults to
-# NPM if no lock file is found.
-# Note: We run "production" for Mix and "build" for Vite
-RUN if [ -f "vite.config.js" ]; then \
-        ASSET_CMD="build"; \
-    else \
-        ASSET_CMD="production"; \
-    fi; \
-    if [ -f "yarn.lock" ]; then \
-        yarn install --frozen-lockfile; \
-        yarn $ASSET_CMD; \
-    elif [ -f "pnpm-lock.yaml" ]; then \
-        corepack enable && corepack prepare pnpm@latest-8 --activate; \
-        pnpm install --frozen-lockfile; \
-        pnpm run $ASSET_CMD; \
-    elif [ -f "package-lock.json" ]; then \
-        npm ci --no-audit; \
-        npm run $ASSET_CMD; \
-    else \
-        npm install; \
-        npm run $ASSET_CMD; \
-    fi;
+RUN composer dump-autoload --optimize \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
 
-# From our base container created above, we
-# create our final image, adding in static
-# assets that we generated above
-FROM base
+RUN npm run build
 
-# Packages like Laravel Nova may have added assets to the public directory
-# or maybe some custom assets were added manually! Either way, we merge
-# in the assets we generated above rather than overwrite them
-COPY --from=node_modules_go_brrr /app/public /var/www/html/public-npm
-RUN rsync -ar /var/www/html/public-npm/ /var/www/html/public/ \
-    && rm -rf /var/www/html/public-npm \
-    && chown -R www-data:www-data /var/www/html/public
+FROM frankenphp_upstream AS production
 
-EXPOSE 8080
+RUN apk add --no-cache \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    oniguruma-dev \
+    sqlite-dev \
+    zip \
+    bash \
+    curl \
+    icu-dev \
+    && docker-php-ext-configure gd \
+        --with-freetype=/usr/include/ \
+        --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_sqlite \
+        gd \
+        opcache \
+        zip \
+        bcmath \
+        pcntl \
+        exif
 
-ENTRYPOINT ["/entrypoint"]
+RUN adduser -D -g '' -G www-data laravel
+
+COPY --from=builder --chown=laravel:www-data /app /app
+
+WORKDIR /app
+
+RUN mkdir -p \
+    /app/storage/app/public \
+    /app/storage/framework/cache \
+    /app/storage/framework/sessions \
+    /app/storage/framework/testing \
+    /app/storage/framework/views \
+    /app/storage/logs \
+    /app/storage/database \
+    /app/bootstrap/cache \
+    && chown -R laravel:www-data /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
+
+COPY <<EOF /usr/local/etc/php/conf.d/app.ini
+; perfomance settings
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0
+opcache.revalidate_freq=0
+opcache.interned_strings_buffer=16
+
+; security settings
+expose_php = Off
+display_errors = Off
+log_errors = On
+error_log = /app/storage/logs/php_errors.log
+
+; laravel specific settings
+upload_max_filesize = 100M
+post_max_size = 100M
+max_execution_time = 60
+memory_limit = 256M
+
+; session settings
+session.cookie_httponly = 1
+session.use_only_cookies = 1
+session.cookie_secure = 1
+session.cookie_samesite = Strict
+EOF
+
+COPY <<EOF /etc/caddy/Caddyfile
+{
+    auto_https off
+
+    frankenphp {
+        worker {
+            file /app/public/index.php
+            num 2
+            env APP_RUNTIME frankenphp
+        }
+    }
+
+    servers {
+        timeouts {
+            read_body 30s
+            read_header 10s
+            write 30s
+            idle 2m
+        }
+        max_header_size 16k
+    }
+}
+
+# Слушаем только HTTP на внутреннем порту
+:8000 {
+    # Корневая директория
+    root * /app/public
+
+    # Сжатие (опционально, если внешний Caddy не делает)
+    encode zstd gzip
+
+    # Логирование
+    log {
+        output file /app/storage/logs/frankenphp_access.log
+        format json
+    }
+
+    # PHP обработка через FrankenPHP
+    php_server {
+        # Настройки для Laravel
+        env APP_ENV production
+        env LOG_CHANNEL stderr
+
+        # Принимаем заголовки от reverse proxy
+        trusted_proxies private_ranges
+
+        # Таймауты
+        timeouts {
+            read 30s
+            write 30s
+        }
+    }
+
+    # Обслуживание статических файлов
+    @static {
+        file
+        path *.ico *.css *.js *.gif *.webp *.avif *.jpg *.jpeg *.png *.svg *.woff *.woff2
+    }
+    handle @static {
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+}
+
+# Health check endpoint
+:8080 {
+    respond /health "OK" 200
+}
+EOF
+
+# supervisor configuration for Laravel queue workers
+COPY <<EOF /etc/supervisor/conf.d/laravel-worker.conf
+[program:laravel-queue]
+process_name=%(program_name)s_%(process_num)02d
+command=php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=laravel
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/app/storage/logs/queue.log
+stopwaitsecs=3600
+EOF
+
+COPY <<'EOF' /usr/local/bin/docker-entrypoint.sh
+#!/bin/sh
+set -e
+
+# migrate database
+php artisan migrate --force
+
+# setup storage symlink
+php artisan storage:link
+
+# cache config, routes, views
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# run queue workers if not using sync driver
+if [ "$QUEUE_CONNECTION" != "sync" ]; then
+    supervisord -c /etc/supervisor/supervisord.conf
+fi
+
+# frankenphp with caddy
+exec frankenphp run --config /etc/caddy/Caddyfile
+EOF
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# change to non-root user
+USER laravel
+
+# Expose ports
+EXPOSE 8000 8080
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
