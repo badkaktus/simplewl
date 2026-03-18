@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Wish;
 use App\Models\Wishlist;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Wish>
+ * @extends Factory<Wish>
  */
 class WishFactory extends Factory
 {

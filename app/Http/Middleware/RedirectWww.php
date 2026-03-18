@@ -12,7 +12,7 @@ class RedirectWww
     {
         if (str_starts_with($request->getHost(), 'www.')) {
             $host = substr($request->getHost(), 4);
-            $url = $request->getScheme() . '://' . $host . $request->getRequestUri();
+            $url = $request->getScheme().'://'.$host.$request->getRequestUri();
 
             return redirect($url, 301);
         }
