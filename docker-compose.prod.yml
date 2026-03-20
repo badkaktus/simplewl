@@ -1,110 +1,83 @@
+x-app-env: &app-env
+  APP_ENV: production
+  APP_KEY: ${APP_KEY}
+  APP_URL: ${APP_URL}
+  APP_NAME: ${APP_NAME}
+  DB_CONNECTION: sqlite
+  DB_DATABASE: /var/www/html/storage/database/database.sqlite
+  DB_FOREIGN_KEYS: ${DB_FOREIGN_KEYS:-}
+  CURRENCYBEACON_API_KEY: ${CURRENCYBEACON_API_KEY:-}
+  CACHE_STORE: file
+  SESSION_DRIVER: ${SESSION_DRIVER:-file}
+  SESSION_LIFETIME: ${SESSION_LIFETIME:-}
+  SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-}
+  MAILGUN_DOMAIN: ${MAILGUN_DOMAIN:-}
+  MAILGUN_SECRET: ${MAILGUN_SECRET:-}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+  MAIL_FROM_NAME: ${MAIL_FROM_NAME:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  OPENAI_MODEL: ${OPENAI_MODEL:-}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+  GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+  GITHUB_REDIRECT_URI: ${GITHUB_REDIRECT_URI:-}
+  TELEGRAM_BOT_NAME: ${TELEGRAM_BOT_NAME:-}
+  TELEGRAM_REDIRECT_URI: ${TELEGRAM_REDIRECT_URI:-}
+  TELEGRAM_TOKEN: ${TELEGRAM_TOKEN:-}
+  SENTRY_DSN: ${SENTRY_DSN:-}
+  SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-}
+  SENTRY_LARAVEL_DSN: ${SENTRY_LARAVEL_DSN:-}
+  LOG_CHANNEL: ${LOG_CHANNEL:-}
+  LOG_LEVEL: ${LOG_LEVEL:-}
+  LOG_STDERR_FORMATTER: ${LOG_STDERR_FORMATTER:-}
+
+x-app-common: &app-common
+  restart: unless-stopped
+  volumes:
+    - ./storage:/var/www/html/storage
+  networks:
+    - proxy
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+    interval: 10s
+    timeout: 5s
+    retries: 3
+    start_period: 30s
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+      labels: "deployment.color,deployment.version"
+
 services:
   simplewl-blue:
+    <<: *app-common
     image: ghcr.io/${GITHUB_USER}/simplewl:${BLUE_VERSION:-latest}
     container_name: simplewl-blue
-    restart: unless-stopped
     environment:
-      - APP_ENV=production
-      - APP_KEY=${APP_KEY}
-      - APP_URL=${APP_URL}
-      - APP_NAME=${APP_NAME}
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/storage/database/database.sqlite
-      - DB_FOREIGN_KEYS=${DB_FOREIGN_KEYS:-}
-      - CURRENCYBEACON_API_KEY=${CURRENCYBEACON_API_KEY:-}
-      - CACHE_STORE=file
-      - SESSION_DRIVER=${SESSION_DRIVER:-file}
-      - SESSION_LIFETIME=${SESSION_DRIVER:-}
-      - SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-}
-      - MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
-      - MAILGUN_SECRET=${MAILGUN_SECRET:-}
-      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - OPENAI_MODEL=${OPENAI_MODEL:-}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-}
-      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
-      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
-      - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI:-}
-      - TELEGRAM_BOT_NAME=${TELEGRAM_BOT_NAME:-}
-      - TELEGRAM_REDIRECT_URI=${TELEGRAM_REDIRECT_URI:-}
-      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN:-}
-      - SENTRY_DSN=${SENTRY_DSN:-}
-      - SENTRY_TRACES_SAMPLE_RATE=${SENTRY_TRACES_SAMPLE_RATE:-}
-      - SENTRY_LARAVEL_DSN=${SENTRY_LARAVEL_DSN:-}
-      - LOG_CHANNEL=${LOG_CHANNEL:-}
-      - LOG_LEVEL=${LOG_LEVEL:-}
-      - LOG_STDERR_FORMATTER=${LOG_STDERR_FORMATTER:-}
-      - CONTAINER_COLOR=blue
-    volumes:
-      - ./storage:/var/www/html/storage
-    networks:
-      - proxy
+      <<: *app-env
+      CONTAINER_COLOR: blue
     labels:
       - "caddy.enable=true"
       - "deployment.color=blue"
       - "deployment.version=${BLUE_VERSION}"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        labels: "deployment.color,deployment.version"
 
   simplewl-green:
+    <<: *app-common
     image: ghcr.io/${GITHUB_USER}/simplewl:${GREEN_VERSION:-latest}
     container_name: simplewl-green
-    restart: unless-stopped
     environment:
-      - APP_ENV=production
-      - APP_KEY=${APP_KEY}
-      - APP_URL=${APP_URL}
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/storage/database/database.sqlite
-      - CACHE_STORE=file
-      - SESSION_DRIVER=file
-      - QUEUE_CONNECTION=sync
-      - MAIL_MAILER=${MAIL_MAILER:-log}
-      - MAILGUN_DOMAIN=${MAILGUN_DOMAIN:-}
-      - MAILGUN_SECRET=${MAILGUN_SECRET:-}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
-      - GITHUB_ID=${GITHUB_ID:-}
-      - GITHUB_SECRET=${GITHUB_SECRET:-}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - SENTRY_LARAVEL_DSN=${SENTRY_LARAVEL_DSN:-}
-      - CONTAINER_COLOR=green
-    volumes:
-      - ./storage:/var/www/html/storage
-    networks:
-      - proxy
+      <<: *app-env
+      CONTAINER_COLOR: green
     labels:
       - "caddy.enable=false"
       - "deployment.color=green"
       - "deployment.version=${GREEN_VERSION}"
     profiles:
       - green
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        labels: "deployment.color,deployment.version"
 
 networks:
   proxy:
