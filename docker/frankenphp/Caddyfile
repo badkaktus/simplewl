@@ -4,7 +4,7 @@
     auto_https off
 }
 
-:80 {
+:8080 {
     root * /var/www/html/public
     encode zstd br gzip
     php_server
