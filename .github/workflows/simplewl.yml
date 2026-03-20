@@ -139,7 +139,7 @@ jobs:
       - name: Verify deployment
         run: |
           sleep 10
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.APP_URL }}/up)
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.APP_URL }}/api/health)
           if [ "$response" = "200" ]; then
             echo "✅ Deployment verified successfully"
           else
