@@ -5,7 +5,7 @@ ARG NODE_VERSION=20
 FROM dunglas/frankenphp:php8.4 AS php_base
 
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
+    git curl wget zip unzip libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN install-php-extensions \
