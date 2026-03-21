@@ -14,7 +14,7 @@ class CurrencySelect extends Component
     public function __construct(
         public ?string $selectedCurrency = null,
     ) {
-        $this->selectedCurrency = isset($selectedCurrency) ? strtoupper($this->selectedCurrency) : '';
+        $this->selectedCurrency = isset($selectedCurrency) ? strtoupper((string) $this->selectedCurrency) : '';
     }
 
     /**

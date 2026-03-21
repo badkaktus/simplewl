@@ -72,7 +72,7 @@ class GoogleControllerTest extends AbstractThirdPartyAuthController
         $googleEmailUser = \Str::random(10).'@test.com';
         $googleNameUser = fake()->name;
 
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => $googleEmailUser,
             'name' => fake()->name,
         ]);

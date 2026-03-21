@@ -18,7 +18,7 @@ class TelegramController extends Controller
     {
         try {
             $telegramUser = Socialite::driver('telegram')->user();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 

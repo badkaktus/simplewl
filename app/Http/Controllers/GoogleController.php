@@ -21,7 +21,7 @@ class GoogleController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 

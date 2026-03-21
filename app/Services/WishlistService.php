@@ -12,8 +12,8 @@ class WishlistService
 
     public function createWishlist(User $user, ?string $title = null, ?string $slug = null): Wishlist
     {
-        $title = $title ?? Wishlist::DEFAULT_WISHLIST_TITLE;
-        $slug = $slug ?? Wishlist::DEFAULT_WISHLIST_SLUG;
+        $title ??= Wishlist::DEFAULT_WISHLIST_TITLE;
+        $slug ??= Wishlist::DEFAULT_WISHLIST_SLUG;
 
         return $this->wishlistRepository->findFirstOrCreate($user->id, $title, $slug);
     }

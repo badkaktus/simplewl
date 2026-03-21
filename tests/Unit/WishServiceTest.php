@@ -47,7 +47,7 @@ class WishServiceTest extends TestCase
         $user = User::factory()->create();
         $this->be($user);
 
-        $wish = app(WishService::class)->createWish($storeWishRequest);
+        $wish = resolve(WishService::class)->createWish($storeWishRequest);
 
         $this->assertDatabaseHas('wishes', [
             'title' => $title,
@@ -90,7 +90,7 @@ class WishServiceTest extends TestCase
             'currency' => fake()->currencyCode,
         ]);
 
-        $wish = app(WishService::class)->createWish($storeWishRequest);
+        $wish = resolve(WishService::class)->createWish($storeWishRequest);
 
         $this->assertInstanceOf(Wish::class, $wish);
         $this->assertDatabaseHas('wishes', [

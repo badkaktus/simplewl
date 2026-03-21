@@ -104,7 +104,7 @@ class WishService
         }
 
         $wishlist = $this->wishlistRepository->getWishlistByUserIdAndSlug($user->id, $wishlistSlug);
-        if (! $wishlist) {
+        if (! $wishlist instanceof Wishlist) {
             return collect();
         }
 
@@ -149,7 +149,7 @@ class WishService
 
     private function getSlugForWish(string $title, int $wishlistId): string
     {
-        if (! $wish = $this->wishRepository->getWishBySlugAndWishlistId(Str::slug($title), $wishlistId)) {
+        if (! ($wish = $this->wishRepository->getWishBySlugAndWishlistId(Str::slug($title), $wishlistId)) instanceof Wish) {
             return Str::slug($title);
         }
 

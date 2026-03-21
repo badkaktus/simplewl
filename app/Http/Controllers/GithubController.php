@@ -23,7 +23,7 @@ class GithubController extends Controller
     {
         try {
             $githubUser = Socialite::driver('github')->user();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 

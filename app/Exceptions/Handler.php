@@ -33,17 +33,15 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
+        $this->reportable(function (Throwable $e): void {
             if (! app()->isProduction()) {
                 return;
             }
             if (app()->bound('sentry')) {
-                app('sentry')->captureException($e);
+                resolve('sentry')->captureException($e);
             }
         });
 
-        $this->renderable(function (TryToOpenPrivateWishlist $e) {
-            return response()->view('errors.403', [], 403);
-        });
+        $this->renderable(fn (TryToOpenPrivateWishlist $e) => response()->view('errors.403', [], 403));
     }
 }

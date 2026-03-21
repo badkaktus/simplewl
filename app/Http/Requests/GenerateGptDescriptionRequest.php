@@ -26,9 +26,9 @@ class GenerateGptDescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|min:3|max:255',
-            'url' => 'url',
-            'imageUrl' => 'url',
+            'title' => ['required', 'string', 'min:3', 'max:255'],
+            'url' => ['url'],
+            'imageUrl' => ['url'],
         ];
     }
 

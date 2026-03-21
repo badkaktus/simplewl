@@ -220,7 +220,7 @@ class WishControllerTest extends TestCase
             'wishlist_id' => $wishlist->id,
         ]);
 
-        $response = $this->post('/wish/'.$wish->slug.'/complete');
+        $this->post('/wish/'.$wish->slug.'/complete');
 
         $wish->refresh();
 
@@ -245,7 +245,7 @@ class WishControllerTest extends TestCase
         $url = fake()->url;
         $imageUrl = fake()->imageUrl();
 
-        $response = $this->put('/wish/'.$wish->slug, [
+        $this->put('/wish/'.$wish->slug, [
             'title' => $title,
             'description' => $description,
             'url' => $url,
@@ -277,7 +277,7 @@ class WishControllerTest extends TestCase
             'wishlist_id' => $wishlist->id,
         ]);
 
-        $response = $this->delete('/wish/'.$wish->slug);
+        $this->delete('/wish/'.$wish->slug);
 
         $this->assertNotNull(Wish::find($wish->id));
     }
