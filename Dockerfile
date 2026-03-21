@@ -48,6 +48,7 @@ FROM php_base AS final
 COPY --from=node_build /app/public/build /var/www/html/public/build
 
 COPY docker/frankenphp/entrypoint-prod.sh /entrypoint-prod.sh
+COPY docker/frankenphp/Caddyfile /etc/frankenphp/Caddyfile
 RUN chmod +x /entrypoint-prod.sh
 
 ENV APP_ENV=production

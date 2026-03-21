@@ -4,8 +4,19 @@
     auto_https off
 }
 
-:80 {
+:8080 {
     root * /var/www/html/public
     encode zstd br gzip
-    php_server
+
+    # Serve existing static files directly
+    @static file
+    handle @static {
+        file_server
+    }
+
+    # Everything else goes to PHP via index.php
+    handle {
+        rewrite * /index.php
+        php_server
+    }
 }
