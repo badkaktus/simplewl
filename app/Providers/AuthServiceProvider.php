@@ -33,10 +33,10 @@ class AuthServiceProvider extends ServiceProvider
             return $user->id === $wish->wishlist->user_id;
         });
 
-        Gate::define('update-wish', fn (User $user, Wish $wish) => $user->id === $wish->wishlist->user_id);
+        Gate::define('update-wish', fn (User $user, Wish $wish): bool => $user->id === $wish->wishlist->user_id);
 
-        Gate::define('delete-wish', fn (User $user, Wish $wish) => $user->id === $wish->wishlist->user_id);
+        Gate::define('delete-wish', fn (User $user, Wish $wish): bool => $user->id === $wish->wishlist->user_id);
 
-        Gate::define('update-wishlist-visibility', fn (User $user, Wishlist $wishlist) => $user->id === $wishlist->user_id);
+        Gate::define('update-wishlist-visibility', fn (User $user, Wishlist $wishlist): bool => $user->id === $wishlist->user_id);
     }
 }
