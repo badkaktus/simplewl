@@ -25,7 +25,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('show-wish', function (User $user, Wish $wish) {
+        Gate::define('show-wish', function (User $user, Wish $wish): bool {
             if (! $wish->wishlist->is_private) {
                 return true;
             }
@@ -33,16 +33,10 @@ class AuthServiceProvider extends ServiceProvider
             return $user->id === $wish->wishlist->user_id;
         });
 
-        Gate::define('update-wish', function (User $user, Wish $wish) {
-            return $user->id === $wish->wishlist->user_id;
-        });
+        Gate::define('update-wish', fn (User $user, Wish $wish) => $user->id === $wish->wishlist->user_id);
 
-        Gate::define('delete-wish', function (User $user, Wish $wish) {
-            return $user->id === $wish->wishlist->user_id;
-        });
+        Gate::define('delete-wish', fn (User $user, Wish $wish) => $user->id === $wish->wishlist->user_id);
 
-        Gate::define('update-wishlist-visibility', function (User $user, Wishlist $wishlist) {
-            return $user->id === $wishlist->user_id;
-        });
+        Gate::define('update-wishlist-visibility', fn (User $user, Wishlist $wishlist) => $user->id === $wishlist->user_id);
     }
 }

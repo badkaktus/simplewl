@@ -41,7 +41,7 @@ class WishRepository
     public function getWishBySlugAndUserId(string $slug, int $userId): Wish
     {
         return Wish::where('slug', $slug)
-            ->whereHas('wishlist', function ($query) use ($userId) {
+            ->whereHas('wishlist', function ($query) use ($userId): void {
                 $query->where('user_id', $userId);
             })
             ->firstOrFail();
@@ -50,7 +50,7 @@ class WishRepository
     public function getUserWishesByWishlistId(int $userId, int $wishlistId): Collection
     {
         return Wish::where('wishlist_id', $wishlistId)
-            ->whereHas('wishlist', function ($query) use ($userId) {
+            ->whereHas('wishlist', function ($query) use ($userId): void {
                 $query->where('user_id', $userId);
             })
             ->orderBy('is_completed')

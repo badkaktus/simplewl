@@ -15,7 +15,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
 
 class WishController extends Controller
 {
@@ -33,13 +32,10 @@ class WishController extends Controller
     {
         $wish = $this->wishService->createWish($request);
 
-        return Redirect::route(
-            'wishlist.index',
-            [
-                'name' => $wish->wishlist->user->name,
-                'slug' => $wish->wishlist->slug,
-            ]
-        );
+        return to_route('wishlist.index', [
+            'name' => $wish->wishlist->user->name,
+            'slug' => $wish->wishlist->slug,
+        ]);
     }
 
     public function show(ShowWishRequest $request, User $user, Wish $wish): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
@@ -56,7 +52,7 @@ class WishController extends Controller
     {
         $updatedWish = $this->wishService->updateWish($request, $wish->slug);
 
-        return Redirect::route('wish.show', [
+        return to_route('wish.show', [
             'user' => $wish->wishlist->user->name,
             'wish' => $updatedWish,
         ]);
@@ -76,7 +72,7 @@ class WishController extends Controller
         $wishlistSlug = $wish->wishlist->slug;
         $this->wishService->deleteWish($wish);
 
-        return Redirect::route('wishlist.index', [
+        return to_route('wishlist.index', [
             'name' => $username,
             'slug' => $wishlistSlug,
         ]);

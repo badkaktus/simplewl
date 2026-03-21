@@ -90,6 +90,6 @@ class Wish extends Model
 
     public function getEscapedDescription(): string
     {
-        return str_replace("\n|\r", '', htmlentities($this->description));
+        return str_replace("\n|\r", '', htmlentities((string) $this->description));
     }
 }

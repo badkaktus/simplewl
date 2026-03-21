@@ -1,5 +1,6 @@
 <?php
 
+use Logtail\Monolog\LogtailHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -54,8 +55,17 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => array_filter(['stderr', env('BETTERSTACK_SOURCE_TOKEN') ? 'betterstack' : null]),
             'ignore_exceptions' => false,
+        ],
+
+        'betterstack' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => LogtailHandler::class,
+            'handler_with' => [
+                'sourceToken' => env('BETTERSTACK_SOURCE_TOKEN'),
+            ],
         ],
 
         'single' => [

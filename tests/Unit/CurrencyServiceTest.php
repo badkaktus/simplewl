@@ -18,7 +18,7 @@ class CurrencyServiceTest extends TestCase
             ),
         ]);
 
-        app(CurrencyService::class)->syncCurrencies();
+        resolve(CurrencyService::class)->syncCurrencies();
 
         $this->assertDatabaseHas('currencies', [
             'name' => 'UAE Dirham',
