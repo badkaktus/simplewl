@@ -24,8 +24,8 @@ class UserService
      */
     public function generateUniqueName(?string $preferredName): string
     {
-        $name = Str::limit(trim((string) $preferredName), 240, '');
-        if ($name === '') {
+        $name = Str::limit(trim(str_replace('/', '-', (string) $preferredName)), 240, '');
+        if ($name === '' || in_array($name, User::RESERVED_NAMES, true)) {
             $name = self::FALLBACK_NAME;
         }
 

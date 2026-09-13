@@ -7,12 +7,14 @@ namespace App\Services;
 use App\Exceptions\TryToOpenPrivateWishlist;
 use App\Http\Requests\StoreWishRequest;
 use App\Http\Requests\UpdateWishRequest;
+use App\Models\User;
 use App\Models\Wish;
 use App\Models\Wishlist;
 use App\Repositories\WishlistRepository;
 use App\Repositories\WishRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WishService
@@ -72,11 +74,17 @@ class WishService
             $updatedFields['slug'] = $this->getSlugForWish($request->title, $wish->wishlist_id);
         }
 
-        if ($request->image_url !== $wish->image_url) {
+        $oldLocalFileName = $wish->local_file_name;
+        $isImageChanged = $request->image_url !== $wish->image_url;
+        if ($isImageChanged) {
             $updatedFields['local_file_name'] = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
         }
 
         $wish->update($updatedFields);
+
+        if ($isImageChanged) {
+            $this->deleteLocalImage($oldLocalFileName);
+        }
 
         return $wish;
     }
@@ -118,7 +126,36 @@ class WishService
 
     public function deleteWish(Wish $wish): void
     {
+        $localFileName = $wish->local_file_name;
         $wish->delete();
+        $this->deleteLocalImage($localFileName);
+    }
+
+    /**
+     * Wishes of a deleted user are removed by the database cascade, so their images are collected beforehand.
+     *
+     * @return Collection<int, string>
+     */
+    public function getUserWishImages(User $user): Collection
+    {
+        return $this->wishRepository->getLocalFileNamesByUserId($user->id);
+    }
+
+    /**
+     * @param  iterable<string>  $localFileNames
+     */
+    public function deleteImages(iterable $localFileNames): void
+    {
+        foreach ($localFileNames as $localFileName) {
+            $this->deleteLocalImage($localFileName);
+        }
+    }
+
+    private function deleteLocalImage(?string $localFileName): void
+    {
+        if ($localFileName) {
+            Storage::disk('public')->delete($localFileName);
+        }
     }
 
     private function saveImageToLocal(string $imageUrl): ?string

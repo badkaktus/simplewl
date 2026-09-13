@@ -20,6 +20,20 @@ class WishlistControllerTest extends TestCase
         $response->assertSee('Your wishlist is empty');
     }
 
+    public function test_wishlist_of_unknown_user_returns_not_found(): void
+    {
+        $this->get('/wishlist/unknown-user')->assertNotFound();
+        $this->get('/wishlist/unknown-user/'.Wishlist::DEFAULT_WISHLIST_SLUG)->assertNotFound();
+    }
+
+    public function test_unknown_wishlist_of_existing_user_returns_not_found(): void
+    {
+        $user = User::factory()->create();
+
+        $this->get('/wishlist/'.$user->name)->assertNotFound();
+        $this->get('/wishlist/'.$user->name.'/unknown-wishlist')->assertNotFound();
+    }
+
     public function test_get_route_user_and_slug(): void
     {
         $user = User::factory()->create();

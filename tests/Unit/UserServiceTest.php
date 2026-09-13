@@ -29,4 +29,14 @@ class UserServiceTest extends TestCase
 
         $this->assertSame('user-2', resolve(UserService::class)->generateUniqueName(null));
     }
+
+    public function test_generate_unique_name_replaces_slash(): void
+    {
+        $this->assertSame('john-doe', resolve(UserService::class)->generateUniqueName('john/doe'));
+    }
+
+    public function test_generate_unique_name_uses_fallback_for_reserved_name(): void
+    {
+        $this->assertSame('user', resolve(UserService::class)->generateUniqueName('..'));
+    }
 }

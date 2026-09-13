@@ -468,17 +468,11 @@ class WishControllerTest extends TestCase
         ];
     }
 
-    public function test_update_wish_with_cleared_image_url(): void
+    public function test_update_wish_with_cleared_image_url_deletes_old_image(): void
     {
-        $user = User::factory()->create();
-        $this->be($user);
-        $wishlist = Wishlist::factory()->create([
-            'user_id' => $user->id,
-        ]);
-        $wish = Wish::factory()->create([
-            'wishlist_id' => $wishlist->id,
-            'local_file_name' => 'wishes/old.png',
-        ]);
+        Storage::fake('public');
+        Storage::disk('public')->put('wishes/old.png', $this->pngImage());
+        [$user, $wish] = $this->createOwnWish(['local_file_name' => 'wishes/old.png']);
 
         $response = $this->put('/wish/'.$user->name.'/'.$wish->slug, [
             'title' => $wish->title,
@@ -489,6 +483,112 @@ class WishControllerTest extends TestCase
         $wish->refresh();
         $this->assertNull($wish->image_url);
         $this->assertNull($wish->local_file_name);
+        Storage::disk('public')->assertMissing('wishes/old.png');
+    }
+
+    public function test_update_wish_with_new_image_url_replaces_old_image(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('wishes/old.png', $this->pngImage());
+        [$user, $wish] = $this->createOwnWish(['local_file_name' => 'wishes/old.png']);
+        $newImageUrl = 'https://shop.test/new.png';
+        Http::fake([
+            $newImageUrl => Http::response($this->pngImage(), 200, ['Content-Type' => 'image/png']),
+        ]);
+
+        $this->put('/wish/'.$user->name.'/'.$wish->slug, [
+            'title' => $wish->title,
+            'image_url' => $newImageUrl,
+        ])->assertRedirect();
+
+        $wish->refresh();
+        $this->assertNotNull($wish->local_file_name);
+        $this->assertNotSame('wishes/old.png', $wish->local_file_name);
+        Storage::disk('public')->assertExists($wish->local_file_name);
+        Storage::disk('public')->assertMissing('wishes/old.png');
+    }
+
+    public function test_update_wish_with_same_image_url_keeps_image(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('wishes/old.png', $this->pngImage());
+        [$user, $wish] = $this->createOwnWish(['local_file_name' => 'wishes/old.png']);
+        Http::fake();
+
+        $this->put('/wish/'.$user->name.'/'.$wish->slug, [
+            'title' => 'New title',
+            'image_url' => $wish->image_url,
+        ])->assertRedirect();
+
+        $this->assertSame('wishes/old.png', $wish->refresh()->local_file_name);
+        Storage::disk('public')->assertExists('wishes/old.png');
+        Http::assertNothingSent();
+    }
+
+    public function test_wish_delete_deletes_image(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('wishes/old.png', $this->pngImage());
+        [$user, $wish] = $this->createOwnWish(['local_file_name' => 'wishes/old.png']);
+
+        $this->delete('/wish/'.$user->name.'/'.$wish->slug)->assertRedirect();
+
+        $this->assertNull(Wish::find($wish->id));
+        Storage::disk('public')->assertMissing('wishes/old.png');
+    }
+
+    #[DataProvider('invalidCurrencyProvider')]
+    public function test_wish_store_rejects_invalid_currency(string $currency): void
+    {
+        $this->be(User::factory()->create());
+
+        $response = $this->post('/wish', [
+            'title' => 'Wish with bad currency',
+            'currency' => $currency,
+        ]);
+
+        $response->assertSessionHasErrors('currency');
+        $this->assertNull(Wish::where('title', 'Wish with bad currency')->first());
+    }
+
+    public static function invalidCurrencyProvider(): array
+    {
+        return [
+            'zero from old currency select' => ['0'],
+            'too short' => ['US'],
+            'too long' => ['DOLLAR'],
+            'not letters' => ['U$D'],
+        ];
+    }
+
+    public function test_wish_store_without_currency_saves_null(): void
+    {
+        $this->be(User::factory()->create());
+
+        $this->post('/wish', [
+            'title' => 'Wish without currency',
+            'currency' => '',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNull(Wish::where('title', 'Wish without currency')->first()->currency);
+    }
+
+    /**
+     * @return array{User, Wish}
+     */
+    private function createOwnWish(array $attributes = []): array
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+        $wishlist = Wishlist::factory()->create([
+            'user_id' => $user->id,
+        ]);
+        $wish = Wish::factory()->create([
+            'wishlist_id' => $wishlist->id,
+            ...$attributes,
+        ]);
+
+        return [$user, $wish];
     }
 
     /**

@@ -4,44 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
-use App\Models\User;
-use App\Models\UserAttributes;
-use App\Services\UserService;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
-use Str;
 
-class Github implements AuthProviderInterface
+class Github extends AbstractAuthProvider
 {
-    public function __construct(private readonly UserService $userService) {}
-
-    public function findUser(SocialiteUser $user): User
+    protected function providerIdColumn(): string
     {
-        $findUser = UserAttributes::whereGithubId($user->getId())->first();
-        if ($findUser) {
-            return $findUser->user;
-        }
+        return 'github_id';
+    }
 
-        // Without this check whereEmail(null) matches the first user without email
-        $email = $user->getEmail();
-        $existingUser = $email ? User::whereEmail($email)->first() : null;
-
-        if (! $existingUser) {
-            $existingUser = User::create([
-                'name' => $this->userService->generateUniqueName($user->getNickname()),
-                'email' => $email,
-                'password' => Hash::make(Str::password()),
-            ]);
-        }
-
-        $attributes = new UserAttributes([
-            'github_id' => $user->getId(),
-        ]);
-        $existingUser->attributes()->save($attributes);
-
-        event(new Registered($existingUser));
-
-        return $existingUser;
+    protected function getVerifiedEmail(SocialiteUser $user): ?string
+    {
+        // The GitHub provider returns only the primary verified email
+        return $user->getEmail();
     }
 }

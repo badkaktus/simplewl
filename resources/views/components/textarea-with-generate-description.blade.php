@@ -69,9 +69,12 @@
             if (this.loading) return
 
             this.loading = true
+            this.errorGptGenerate = ''
             axios
                 .post('{{ route('generate.description') }}', {
-                    title: title.value,
+                    title: this.title,
+                    description: this.descText || null,
+                    url: document.getElementById('url')?.value || null,
                 })
                 .then(response => {
                     if (response.data.isSuccess) {
@@ -85,13 +88,13 @@
                 .catch(error => {
                     if (error.response?.status === 429) {
                         this.errorGptGenerate = 'Too many requests. Please try again later.'
-                    }
-
-                    if (error.response?.status === 400 && error.response.data) {
+                    } else if (error.response?.status === 400 && error.response.data) {
                         this.errorGptGenerate = Object.keys(error.response.data).reduce((acc, key) => {
                             const values = error.response.data[key].reduce((acc, value) => acc + value + " ", "");
                             return acc + values + " ";
                         }, "")
+                    } else {
+                        this.errorGptGenerate = 'Something went wrong. Please try again later.'
                     }
                 })
                 .finally(() => {

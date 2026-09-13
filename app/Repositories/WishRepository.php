@@ -64,4 +64,16 @@ class WishRepository
             ->where('wishlist_id', $wishlistId)
             ->first();
     }
+
+    /**
+     * @return Collection<int, string>
+     */
+    public function getLocalFileNamesByUserId(int $userId): Collection
+    {
+        return Wish::whereNotNull('local_file_name')
+            ->whereHas('wishlist', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
+            })
+            ->pluck('local_file_name');
+    }
 }

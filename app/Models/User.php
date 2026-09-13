@@ -57,6 +57,11 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
 
+    /**
+     * Names that browsers resolve as relative path segments in wishlist URLs.
+     */
+    public const RESERVED_NAMES = ['.', '..'];
+
     protected $fillable = [
         'name',
         'email',

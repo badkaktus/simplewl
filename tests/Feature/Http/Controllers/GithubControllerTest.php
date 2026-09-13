@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\UserAttributes;
 use App\Models\Wishlist;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Event;
 use Symfony\Component\HttpFoundation\Response;
 
 class GithubControllerTest extends AbstractThirdPartyAuthController
@@ -105,6 +107,52 @@ class GithubControllerTest extends AbstractThirdPartyAuthController
 
         $this->assertNotSame($existingUser->id, $newUser->id);
         $this->assertSame($existingUser->name.'-2', $newUser->name);
+    }
+
+    public function test_github_login_adds_provider_to_existing_attributes_row(): void
+    {
+        $githubIdUser = random_int(100, 1000);
+        $googleIdUser = random_int(100, 1000);
+        $user = User::factory()->create();
+        UserAttributes::factory()->create([
+            'id' => $user->id,
+            'google_id' => $googleIdUser,
+        ]);
+
+        $this->mockUser('github', $githubIdUser, fake()->userName, $user->email);
+
+        $response = $this->get('/auth/github/callback');
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(1, UserAttributes::where('id', $user->id)->count());
+        $this->assertDatabaseHas('user_attributes', [
+            'id' => $user->id,
+            'google_id' => $googleIdUser,
+            'github_id' => $githubIdUser,
+        ]);
+    }
+
+    public function test_registered_event_is_not_dispatched_when_linking_existing_user(): void
+    {
+        Event::fake([Registered::class]);
+        $existingUser = User::factory()->create();
+
+        $this->mockUser('github', random_int(100, 1000), fake()->userName, $existingUser->email);
+        $this->get('/auth/github/callback')->assertRedirect(RouteServiceProvider::HOME);
+
+        $this->assertAuthenticatedAs($existingUser);
+        Event::assertNotDispatched(Registered::class);
+    }
+
+    public function test_registered_event_is_dispatched_for_new_user(): void
+    {
+        Event::fake([Registered::class]);
+
+        $this->mockUser('github', random_int(100, 1000), fake()->userName, \Str::random(10).'@test.com');
+        $this->get('/auth/github/callback')->assertRedirect(RouteServiceProvider::HOME);
+
+        Event::assertDispatchedTimes(Registered::class, 1);
     }
 
     public function test_failed_validation(): void

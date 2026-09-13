@@ -27,14 +27,20 @@ class GenerateGptDescriptionRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'min:3', 'max:255'],
-            'url' => ['url'],
-            'imageUrl' => ['url'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'url' => ['nullable', 'url:http,https', 'max:2048'],
+            'imageUrl' => ['nullable', 'url:http,https'],
         ];
     }
 
     public function getTitle(): string
     {
         return $this->input('title');
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->input('description');
     }
 
     public function getUrl(): ?string
