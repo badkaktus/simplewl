@@ -17,7 +17,7 @@ class GoogleController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback(): RedirectResponse|JsonResponse
+    public function handleGoogleCallback(Google $authProvider): RedirectResponse|JsonResponse
     {
         try {
             $googleUser = Socialite::driver('google')->user();
@@ -25,7 +25,7 @@ class GoogleController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Google)->findUser($googleUser);
+        $user = $authProvider->findUser($googleUser);
 
         Auth::login($user);
 

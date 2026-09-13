@@ -19,7 +19,7 @@ class GithubController extends Controller
         return Socialite::driver('github')->redirect();
     }
 
-    public function handleGithubCallback(): RedirectResponse|JsonResponse
+    public function handleGithubCallback(Github $authProvider): RedirectResponse|JsonResponse
     {
         try {
             $githubUser = Socialite::driver('github')->user();
@@ -27,7 +27,7 @@ class GithubController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Github)->findUser($githubUser);
+        $user = $authProvider->findUser($githubUser);
 
         Auth::login($user);
 

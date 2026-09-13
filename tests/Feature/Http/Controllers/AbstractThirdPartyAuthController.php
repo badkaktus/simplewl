@@ -21,11 +21,9 @@ abstract class AbstractThirdPartyAuthController extends TestCase
             ->shouldReceive('getNickname')
             ->andReturn($nickname);
 
-        if (! is_null($email)) {
-            $abstractUser
-                ->shouldReceive('getEmail')
-                ->andReturn($email);
-        }
+        $abstractUser
+            ->shouldReceive('getEmail')
+            ->andReturn($email);
 
         $provider = Mockery::mock(Provider::class);
         $provider->shouldReceive('user')->andReturn($abstractUser);

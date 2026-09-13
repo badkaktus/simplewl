@@ -54,7 +54,7 @@
                                     </div>
                                 @endif
                                 <div>
-                                    <a href="{{ route('wish.edit', $wish->slug) }}"
+                                    <a href="{{ route('wish.edit', ['user' => $wish->wishlist->user->name, 'wish' => $wish->slug]) }}"
                                        class="rounded-full w-10 h-10 hover:bg-gray-300 bg-gray-200 p-0 border-0 inline-flex items-center justify-center hover:text-gray-500 ml-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"
                                              viewBox="0 0 512 512">
@@ -65,7 +65,7 @@
                                     </a>
                                 </div>
                                 <div>
-                                    <form method="POST" action="{{ route('wish.destroy',  $wish->slug) }}">
+                                    <form method="POST" action="{{ route('wish.destroy', ['user' => $wish->wishlist->user->name, 'wish' => $wish->slug]) }}">
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit"

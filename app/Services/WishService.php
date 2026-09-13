@@ -13,16 +13,17 @@ use App\Repositories\WishlistRepository;
 use App\Repositories\WishRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WishService
 {
+    private const IMAGES_DIRECTORY = 'wishes';
+
     public function __construct(
         private readonly WishRepository $wishRepository,
         private readonly WishlistRepository $wishlistRepository,
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly ImageDownloader $imageDownloader,
     ) {}
 
     public function createWish(StoreWishRequest $request): Wish
@@ -72,7 +73,7 @@ class WishService
         }
 
         if ($request->image_url !== $wish->image_url) {
-            $updatedFields['local_file_name'] = $this->saveImageToLocal($request->image_url);
+            $updatedFields['local_file_name'] = $request->image_url ? $this->saveImageToLocal($request->image_url) : null;
         }
 
         $wish->update($updatedFields);
@@ -122,29 +123,7 @@ class WishService
 
     private function saveImageToLocal(string $imageUrl): ?string
     {
-        $response = Http::get($imageUrl);
-        if ($response->failed()) {
-            return null;
-        }
-
-        $extension = $this->getExtensionFromContentType($response->header('Content-Type'));
-        $filename = 'wishes/'.uniqid('image_', true).'.'.$extension;
-
-        Storage::disk('public')->put($filename, $response->body());
-
-        return $filename;
-    }
-
-    private function getExtensionFromContentType(string $contentType): string
-    {
-        $mimeTypes = [
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/gif' => 'gif',
-            'image/svg+xml' => 'svg',
-        ];
-
-        return $mimeTypes[$contentType] ?? 'jpg';
+        return $this->imageDownloader->download($imageUrl, self::IMAGES_DIRECTORY);
     }
 
     private function getSlugForWish(string $title, int $wishlistId): string

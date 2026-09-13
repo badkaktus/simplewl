@@ -6,6 +6,7 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Models\UserAttributes;
+use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
@@ -13,6 +14,8 @@ use Str;
 
 class Google implements AuthProviderInterface
 {
+    public function __construct(private readonly UserService $userService) {}
+
     public function findUser(SocialiteUser $user): User
     {
         $findUser = UserAttributes::whereGoogleId($user->getId())->first();
@@ -20,12 +23,14 @@ class Google implements AuthProviderInterface
             return $findUser->user;
         }
 
-        $existingUser = User::whereEmail($user->getEmail())->first();
+        // Without this check whereEmail(null) matches the first user without email
+        $email = $user->getEmail();
+        $existingUser = $email ? User::whereEmail($email)->first() : null;
 
         if (! $existingUser) {
             $existingUser = User::create([
-                'name' => $user->getNickname(),
-                'email' => $user->getEmail(),
+                'name' => $this->userService->generateUniqueName($user->getNickname()),
+                'email' => $email,
                 'password' => Hash::make(Str::password()),
             ]);
         }

@@ -120,6 +120,50 @@ class WishlistControllerTest extends TestCase
         ]);
     }
 
+    public function test_user_cant_change_another_user_wishlist_visibility_with_same_slug(): void
+    {
+        $user = User::factory()->create();
+        Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
+            'is_private' => 0,
+        ]);
+        $victim = User::factory()->create();
+        $victimWishlist = Wishlist::factory()->create([
+            'user_id' => $victim->id,
+            'slug' => Wishlist::DEFAULT_WISHLIST_SLUG,
+            'is_private' => 1,
+        ]);
+        $this->be($user);
+
+        $response = $this->post('/wishlist/'.$victim->name.'/'.$victimWishlist->slug.'/visibility');
+
+        $response->assertStatus(ResponseAlias::HTTP_FORBIDDEN);
+        $this->assertDatabaseHas(Wishlist::TABLE_NAME, [
+            'id' => $victimWishlist->id,
+            'is_private' => 1,
+        ]);
+        $this->assertDatabaseHas(Wishlist::TABLE_NAME, [
+            'user_id' => $user->id,
+            'is_private' => 0,
+        ]);
+    }
+
+    public function test_guest_cant_change_wishlist_visibility(): void
+    {
+        $wishlist = Wishlist::factory()->create([
+            'is_private' => 1,
+        ]);
+
+        $response = $this->post('/wishlist/'.$wishlist->user->name.'/'.$wishlist->slug.'/visibility');
+
+        $response->assertRedirect('/login');
+        $this->assertDatabaseHas(Wishlist::TABLE_NAME, [
+            'id' => $wishlist->id,
+            'is_private' => 1,
+        ]);
+    }
+
     public function test_auth_user_can_see_wishlist_from_another_user_public_wishlist(): void
     {
         $user = User::factory()->create();

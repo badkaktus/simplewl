@@ -63,6 +63,42 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
+    public function test_profile_name_cant_be_changed_to_taken_name(): void
+    {
+        $user = User::factory()->create();
+        $anotherUser = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => $anotherUser->name,
+                'email' => $user->email,
+            ]);
+
+        $response
+            ->assertSessionHasErrors('name')
+            ->assertRedirect('/profile');
+
+        $this->assertNotSame($anotherUser->name, $user->refresh()->name);
+    }
+
+    public function test_profile_can_be_saved_with_unchanged_name(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+    }
+
     public function test_user_can_delete_their_account(): void
     {
         $user = User::factory()->create();

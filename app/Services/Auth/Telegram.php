@@ -6,6 +6,7 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Models\UserAttributes;
+use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
@@ -13,6 +14,8 @@ use Str;
 
 class Telegram implements AuthProviderInterface
 {
+    public function __construct(private readonly UserService $userService) {}
+
     public function findUser(SocialiteUser $user): User
     {
         $findUser = UserAttributes::whereTelegramId($user->getId())->first();
@@ -20,22 +23,20 @@ class Telegram implements AuthProviderInterface
             return $findUser->user;
         }
 
-        $existingUser = User::whereName($user->getNickname())->first();
-
-        if (! $existingUser) {
-            $existingUser = User::create([
-                'name' => $user->getNickname(),
-                'password' => Hash::make(Str::password()),
-            ]);
-        }
+        // Telegram does not provide a verified email, and the name is chosen freely,
+        // so an unknown Telegram account always gets a new user.
+        $newUser = User::create([
+            'name' => $this->userService->generateUniqueName($user->getNickname()),
+            'password' => Hash::make(Str::password()),
+        ]);
 
         $attributes = new UserAttributes([
             'telegram_id' => $user->getId(),
         ]);
-        $existingUser->attributes()->save($attributes);
+        $newUser->attributes()->save($attributes);
 
-        event(new Registered($existingUser));
+        event(new Registered($newUser));
 
-        return $existingUser;
+        return $newUser;
     }
 }

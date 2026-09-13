@@ -29,7 +29,7 @@ class WishServiceTest extends TestCase
         ?float $amount,
         ?string $currency
     ): void {
-        $imageContent = 'fake_image_content';
+        $imageContent = $this->pngImage();
         Http::fake([
             $image_url => Http::response($imageContent, 200, ['Content-Type' => 'image/jpeg']),
         ]);

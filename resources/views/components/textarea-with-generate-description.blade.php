@@ -83,7 +83,11 @@
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 400 && error.response.data) {
+                    if (error.response?.status === 429) {
+                        this.errorGptGenerate = 'Too many requests. Please try again later.'
+                    }
+
+                    if (error.response?.status === 400 && error.response.data) {
                         this.errorGptGenerate = Object.keys(error.response.data).reduce((acc, key) => {
                             const values = error.response.data[key].reduce((acc, value) => acc + value + " ", "");
                             return acc + values + " ";

@@ -66,6 +66,47 @@ class GithubControllerTest extends AbstractThirdPartyAuthController
         $response->assertRedirect(RouteServiceProvider::HOME);
     }
 
+    public function test_github_login_without_email_does_not_take_over_user_without_email(): void
+    {
+        $githubIdUser = random_int(100, 1000);
+        $victim = User::factory()->create([
+            'email' => null,
+        ]);
+
+        $this->mockUser('github', $githubIdUser, fake()->userName);
+
+        $response = $this->get('/auth/github/callback');
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $newUser = UserAttributes::whereGithubId($githubIdUser)->first()->user;
+
+        $this->assertNotSame($victim->id, $newUser->id);
+        $this->assertDatabaseHas('users', [
+            'id' => $newUser->id,
+            'email' => null,
+        ]);
+        $this->assertAuthenticatedAs($newUser);
+        $this->assertDatabaseMissing('user_attributes', [
+            'id' => $victim->id,
+        ]);
+    }
+
+    public function test_github_login_generates_unique_name(): void
+    {
+        $githubIdUser = random_int(100, 1000);
+        $existingUser = User::factory()->create();
+
+        $this->mockUser('github', $githubIdUser, $existingUser->name, \Str::random(10).'@test.com');
+
+        $response = $this->get('/auth/github/callback');
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $newUser = UserAttributes::whereGithubId($githubIdUser)->first()->user;
+
+        $this->assertNotSame($existingUser->id, $newUser->id);
+        $this->assertSame($existingUser->name.'-2', $newUser->name);
+    }
+
     public function test_failed_validation(): void
     {
         $response = $this->get('/auth/github/callback');

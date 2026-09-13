@@ -11,8 +11,8 @@ class ValidationHelper
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'url' => ['nullable', 'url'],
-            'image_url' => ['nullable', 'url'],
+            'url' => ['nullable', 'url:http,https'],
+            'image_url' => ['nullable', 'url:http,https'],
             'amount' => ['nullable', 'numeric'],
             'currency' => ['nullable', 'string'],
         ];

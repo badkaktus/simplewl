@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
         Request $request
     ): Application|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);

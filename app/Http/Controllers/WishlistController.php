@@ -50,19 +50,12 @@ class WishlistController extends Controller
         );
     }
 
-    /**
-     * @throws Exception
-     */
     public function changeVisibility(
         ChangeWishlistVisibilityRequest $request,
         string $username,
         string $slug
     ): JsonResponse {
-        $user = $this->userService->getUserByName($username);
-        if (is_null($user)) {
-            throw new Exception('User not found');
-        }
-        $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($user->id, $slug);
+        $wishlist = $this->wishlistService->getWishlistByUserIdAndSlug($request->user()->id, $slug);
         $updatedWishlist = $this->wishlistService->changeVisibility($wishlist);
 
         return response()->json(['success' => true, 'isPrivate' => $updatedWishlist->is_private]);
