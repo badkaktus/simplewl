@@ -138,6 +138,9 @@ class ImageDownloader
 
     private function isPublicIp(string $ip): bool
     {
+        // On PHP 8.4 FILTER_FLAG_GLOBAL_RANGE has the value of FILTER_THROW_ON_FAILURE from PHP 8.5 stubs,
+        // so PHPStan wrongly assumes that filter_var() can't return false here
+        // @phpstan-ignore identical.alwaysFalse
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) === false) {
             return false;
         }
