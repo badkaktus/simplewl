@@ -25,4 +25,14 @@ php artisan migrate --force
 # Cache routes, config, views for performance
 php artisan optimize
 
+# Run the Laravel scheduler next to the web server, restarting it if it exits
+if [ "${RUN_SCHEDULER:-true}" = "true" ]; then
+    (
+        while true; do
+            php artisan schedule:work || true
+            sleep 5
+        done
+    ) &
+fi
+
 exec frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile

@@ -19,3 +19,6 @@ yarn-error.log
 /.vscode
 .DS_Store
 /.rector_cache
+# Local backups, e.g. archives of uploaded wish images
+/*.tar.gz
+/*.zip

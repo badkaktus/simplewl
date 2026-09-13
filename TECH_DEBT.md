@@ -39,14 +39,14 @@
 
 ## 🟡 CI и инфраструктура
 
-- [ ] **`vendor/bin/pint` в CI без `--test`** — форматирование никогда не роняет сборку.
-- [ ] **Два lock-файла** (`yarn.lock` и `package-lock.json`): CI проверяет npm, Docker собирает yarn.
-- [ ] **`debug` в `docker/frankenphp/Caddyfile`** в продакшене.
-- [ ] **`wishes.tar.gz` в корне** не исключён в `.gitignore` / `.dockerignore`.
-- [ ] **`larastan` в `require`** вместо `require-dev`.
-- [ ] **Неиспользуемые зависимости:** `doctrine/dbal`, `socialiteproviders/facebook`, `laravel/sanctum`,
+- [x] **`vendor/bin/pint` в CI без `--test`** — форматирование никогда не роняет сборку.
+- [x] **Два lock-файла** (`yarn.lock` и `package-lock.json`): CI проверяет npm, Docker собирает yarn.
+- [x] **`debug` в `docker/frankenphp/Caddyfile`** в продакшене.
+- [x] **`wishes.tar.gz` в корне** не исключён в `.gitignore` / `.dockerignore`.
+- [x] **`larastan` в `require`** вместо `require-dev`.
+- [x] **Неиспользуемые зависимости:** `doctrine/dbal`, `socialiteproviders/facebook`, `laravel/sanctum`,
   `@tailwindcss/aspect-ratio`.
-- [ ] **`currency:sync` не запланирован** в scheduler.
+- [x] **`currency:sync` не запланирован** в scheduler.
 
 ## 🎨 Дизайн и UX
 

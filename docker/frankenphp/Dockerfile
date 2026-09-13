@@ -21,11 +21,10 @@ RUN install-php-extensions \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install Node.js + Yarn (for Vite dev server)
+# Install Node.js (for Vite dev server)
 ARG NODE_VERSION=20
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g yarn \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html

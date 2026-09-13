@@ -6,6 +6,10 @@ storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
 storage/logs/*
+# Local uploads and database, production mounts its own storage volume
+storage/app/public/*
+storage/database/*
+public/storage
 *.env*
 .rr.yml
 rr
@@ -25,3 +29,5 @@ fly.toml
 **/.DS_Store
 **/Thumbs.db
 public/hot
+/*.tar.gz
+/*.zip
