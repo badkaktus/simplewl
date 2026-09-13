@@ -6,7 +6,6 @@ use App\Listeners\SignUpListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use SocialiteProviders\Facebook\FacebookExtendSocialite;
 use SocialiteProviders\GitHub\GitHubExtendSocialite;
 use SocialiteProviders\Google\GoogleExtendSocialite;
 use SocialiteProviders\Manager\SocialiteWasCalled;
@@ -22,7 +21,6 @@ class EventServiceProvider extends ServiceProvider
         SocialiteWasCalled::class => [
             GoogleExtendSocialite::class.'@handle',
             TelegramExtendSocialite::class.'@handle',
-            //            FacebookExtendSocialite::class.'@handle',
             GitHubExtendSocialite::class.'@handle',
         ],
     ];

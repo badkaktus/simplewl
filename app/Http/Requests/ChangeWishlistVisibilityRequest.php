@@ -18,6 +18,10 @@ class ChangeWishlistVisibilityRequest extends FormRequest
         /** @var User|null $user */
         $user = $this->user();
 
+        if ($user->name !== $this->route('name')) {
+            return false;
+        }
+
         $wishlist = $wishlistService->getWishlistByUserIdAndSlug($user->id, $slug);
         if (is_null($wishlist)) {
             return false;

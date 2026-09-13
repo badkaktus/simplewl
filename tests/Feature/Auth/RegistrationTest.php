@@ -29,6 +29,37 @@ class RegistrationTest extends TestCase
         $response->assertRedirect(RouteServiceProvider::HOME);
     }
 
+    public function test_users_cant_register_with_taken_name(): void
+    {
+        $existingUser = User::factory()->create();
+
+        $response = $this->post('/register', [
+            'name' => $existingUser->name,
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('name');
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', [
+            'email' => 'test@example.com',
+        ]);
+    }
+
+    public function test_users_cant_register_with_name_that_breaks_wishlist_url(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'john/doe',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('name');
+        $this->assertGuest();
+    }
+
     public function test_new_users_have_default_wishlist(): void
     {
         $email = fake()->email;

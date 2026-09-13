@@ -38,9 +38,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/wish', [WishController::class, 'store'])->name('wish.store');
     Route::get('/wish/create', [WishController::class, 'create'])->name('wish.create');
     Route::get('/my-wishlist', [MyWishlistController::class, 'index'])->name('my-wishlist');
-    Route::get('/wish/{wish}/edit', [WishController::class, 'edit'])->name('wish.edit');
-    Route::put('/wish/{wish}', [WishController::class, 'update'])->name('wish.update');
-    Route::delete('/wish/{wish}', [WishController::class, 'destroy'])->name('wish.destroy');
+    // Wish slugs are unique only within a wishlist, so wishes are resolved through their owner
+    Route::scopeBindings()->group(function () {
+        Route::get('/wish/{user:name}/{wish:slug}/edit', [WishController::class, 'edit'])->name('wish.edit');
+        Route::put('/wish/{user:name}/{wish:slug}', [WishController::class, 'update'])->name('wish.update');
+        Route::delete('/wish/{user:name}/{wish:slug}', [WishController::class, 'destroy'])->name('wish.destroy');
+    });
     Route::post('/wish/{slug}/complete', [WishController::class, 'complete'])
         ->name('wish.complete');
     Route::post('/wishlist/{name}/{slug}/visibility', [WishlistController::class, 'changeVisibility'])
@@ -48,11 +51,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/currency/all', CurrencyController::class)->name('currency');
 
     Route::post('/generate-description', WishDescriptionGenerateController::class)
+        ->middleware('throttle:generate-description')
         ->name('generate.description');
 });
 
 Route::get('/wishlist/{name}/{slug?}', [WishlistController::class, 'index'])->name('wishlist.index');
-Route::get('/wish/{user:name}/{wish}', [WishController::class, 'show'])->name('wish.show');
+Route::get('/wish/{user:name}/{wish:slug}', [WishController::class, 'show'])
+    ->scopeBindings()
+    ->name('wish.show');
 
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

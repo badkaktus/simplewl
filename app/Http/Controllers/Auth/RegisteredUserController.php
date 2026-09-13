@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ValidationHelper;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -35,7 +36,7 @@ class RegisteredUserController extends Controller
         Request $request
     ): Application|Redirector|RedirectResponse|\Illuminate\Contracts\Foundation\Application {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', ...ValidationHelper::getUserNameRules()],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);

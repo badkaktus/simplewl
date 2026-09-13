@@ -88,6 +88,44 @@ class GoogleControllerTest extends AbstractThirdPartyAuthController
         ]);
     }
 
+    public function test_google_login_without_email_does_not_take_over_user_without_email(): void
+    {
+        $googleIdUser = random_int(100, 1000);
+        $victim = User::factory()->create([
+            'email' => null,
+        ]);
+
+        $this->mockUser('google', $googleIdUser, fake()->name);
+
+        $response = $this->get('/auth/google/callback');
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $newUser = UserAttributes::whereGoogleId($googleIdUser)->first()->user;
+
+        $this->assertNotSame($victim->id, $newUser->id);
+        $this->assertAuthenticatedAs($newUser);
+    }
+
+    public function test_google_login_with_unverified_email_does_not_take_over_user(): void
+    {
+        $googleIdUser = random_int(100, 1000);
+        $victim = User::factory()->create();
+
+        $this->mockUser('google', $googleIdUser, fake()->name, $victim->email, isEmailVerified: false);
+
+        $response = $this->get('/auth/google/callback');
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $newUser = UserAttributes::whereGoogleId($googleIdUser)->first()->user;
+
+        $this->assertNotSame($victim->id, $newUser->id);
+        $this->assertAuthenticatedAs($newUser);
+        $this->assertDatabaseHas('users', [
+            'id' => $newUser->id,
+            'email' => null,
+        ]);
+    }
+
     public function test_failed_validation(): void
     {
         $response = $this->get('/auth/google/callback');

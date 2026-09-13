@@ -4,39 +4,23 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
-use App\Models\User;
-use App\Models\UserAttributes;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
-use Str;
+use Laravel\Socialite\Two\User as OAuthTwoUser;
 
-class Google implements AuthProviderInterface
+class Google extends AbstractAuthProvider
 {
-    public function findUser(SocialiteUser $user): User
+    protected function providerIdColumn(): string
     {
-        $findUser = UserAttributes::whereGoogleId($user->getId())->first();
-        if ($findUser) {
-            return $findUser->user;
+        return 'google_id';
+    }
+
+    protected function getVerifiedEmail(SocialiteUser $user): ?string
+    {
+        // The Google provider does not check that the email is verified
+        if (! $user instanceof OAuthTwoUser || ($user->getRaw()['email_verified'] ?? false) !== true) {
+            return null;
         }
 
-        $existingUser = User::whereEmail($user->getEmail())->first();
-
-        if (! $existingUser) {
-            $existingUser = User::create([
-                'name' => $user->getNickname(),
-                'email' => $user->getEmail(),
-                'password' => Hash::make(Str::password()),
-            ]);
-        }
-
-        $attributes = new UserAttributes([
-            'google_id' => $user->getId(),
-        ]);
-        $existingUser->attributes()->save($attributes);
-
-        event(new Registered($existingUser));
-
-        return $existingUser;
+        return $user->getEmail();
     }
 }

@@ -16,4 +16,9 @@ class UserRepository
 
         return $user;
     }
+
+    public function existsByName(string $name): bool
+    {
+        return User::where('name', $name)->exists();
+    }
 }

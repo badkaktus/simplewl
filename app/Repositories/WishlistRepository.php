@@ -8,7 +8,8 @@ class WishlistRepository
 {
     public function findFirstOrCreate(int $userId, string $title, string $slug): Wishlist
     {
-        return Wishlist::firstOrCreate(['user_id' => $userId, 'title' => $title, 'slug' => $slug]);
+        // The slug is unique for the user, the title is only used for a new wishlist
+        return Wishlist::firstOrCreate(['user_id' => $userId, 'slug' => $slug], ['title' => $title]);
     }
 
     public function getWishlistByUserIdAndSlug(int $userId, string $slug): ?Wishlist

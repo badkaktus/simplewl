@@ -34,13 +34,10 @@ WORKDIR /app
 COPY . .
 COPY --from=php_base /var/www/html/vendor /app/vendor
 
-RUN if [ -f yarn.lock ]; then \
-        yarn install --frozen-lockfile; \
-    else \
-        npm ci --no-audit; \
-    fi
+# package-lock.json is the only lock file, the same one CI installs and audits
+RUN npm ci --no-audit
 
-RUN if [ -f yarn.lock ]; then yarn build; else npm run build; fi
+RUN npm run build
 
 # Stage 3: Final production image
 FROM php_base AS final

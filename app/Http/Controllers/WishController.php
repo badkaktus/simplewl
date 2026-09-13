@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DestroyWishRequest;
+use App\Http\Requests\EditWishRequest;
 use App\Http\Requests\ShowWishRequest;
 use App\Http\Requests\StoreWishRequest;
 use App\Http\Requests\UpdateWishRequest;
@@ -43,12 +44,12 @@ class WishController extends Controller
         return view('wish.show', ['wish' => $wish]);
     }
 
-    public function edit(Wish $wish): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function edit(EditWishRequest $request, User $user, Wish $wish): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         return view('wish.edit', ['wish' => $wish]);
     }
 
-    public function update(UpdateWishRequest $request, Wish $wish): RedirectResponse
+    public function update(UpdateWishRequest $request, User $user, Wish $wish): RedirectResponse
     {
         $updatedWish = $this->wishService->updateWish($request, $wish->slug);
 
@@ -66,7 +67,7 @@ class WishController extends Controller
 
     }
 
-    public function destroy(DestroyWishRequest $request, Wish $wish): RedirectResponse
+    public function destroy(DestroyWishRequest $request, User $user, Wish $wish): RedirectResponse
     {
         $username = $wish->wishlist->user->name;
         $wishlistSlug = $wish->wishlist->slug;

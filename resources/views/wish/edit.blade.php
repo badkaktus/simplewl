@@ -11,7 +11,7 @@
             errorGptGenerate: "",
         }'
     >
-        <form method="POST" action="{{ route('wish.update', $wish) }}">
+        <form method="POST" action="{{ route('wish.update', ['user' => $wish->wishlist->user->name, 'wish' => $wish->slug]) }}">
             @method('PUT')
             @csrf
             <div class="space-y-12">

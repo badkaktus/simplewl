@@ -1,6 +1,5 @@
 {
     frankenphp
-    debug
     auto_https off
 }
 

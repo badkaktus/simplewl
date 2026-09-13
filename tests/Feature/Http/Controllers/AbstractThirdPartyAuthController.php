@@ -12,8 +12,13 @@ use Tests\TestCase;
 
 abstract class AbstractThirdPartyAuthController extends TestCase
 {
-    protected function mockUser(string $driver, int $id, string $nickname, ?string $email = null): void
-    {
+    protected function mockUser(
+        string $driver,
+        int $id,
+        string $nickname,
+        ?string $email = null,
+        bool $isEmailVerified = true,
+    ): void {
         $abstractUser = Mockery::mock(User::class);
         $abstractUser->shouldReceive('getId')
             ->andReturn($id);
@@ -21,11 +26,12 @@ abstract class AbstractThirdPartyAuthController extends TestCase
             ->shouldReceive('getNickname')
             ->andReturn($nickname);
 
-        if (! is_null($email)) {
-            $abstractUser
-                ->shouldReceive('getEmail')
-                ->andReturn($email);
-        }
+        $abstractUser
+            ->shouldReceive('getEmail')
+            ->andReturn($email);
+        $abstractUser
+            ->shouldReceive('getRaw')
+            ->andReturn(['email_verified' => $isEmailVerified]);
 
         $provider = Mockery::mock(Provider::class);
         $provider->shouldReceive('user')->andReturn($abstractUser);

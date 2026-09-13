@@ -12,7 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Blue and green containers share the storage volume with the file cache,
+        // so the lock keeps a single sync during deployments
+        $schedule->command('currency:sync')
+            ->dailyAt('03:00')
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     /**

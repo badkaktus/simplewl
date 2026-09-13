@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TelegramController extends Controller
 {
-    public function handleTelegramCallback(): RedirectResponse|JsonResponse
+    public function handleTelegramCallback(Telegram $authProvider): RedirectResponse|JsonResponse
     {
         try {
             $telegramUser = Socialite::driver('telegram')->user();
@@ -22,7 +22,7 @@ class TelegramController extends Controller
             return response()->json(['error' => 'Invalid request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = (new Telegram)->findUser($telegramUser);
+        $user = $authProvider->findUser($telegramUser);
 
         Auth::login($user);
 
