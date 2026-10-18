@@ -54,8 +54,9 @@ class ProductPageParser
     {
         $dom = new DOMDocument;
         $useInternalErrors = libxml_use_internal_errors(true);
-        // The XML declaration makes libxml read the page as UTF-8 instead of ISO-8859-1
-        $dom->loadHTML('<?xml encoding="UTF-8">'.$html, LIBXML_NONET);
+        // libxml decodes the page by its <meta charset>, which can be stale after the page was converted to UTF-8,
+        // so non-ASCII characters are passed as numeric entities
+        $dom->loadHTML(mb_encode_numericentity($html, [0x80, 0x10FFFF, 0, 0x1FFFFF], 'UTF-8'), LIBXML_NONET);
         libxml_clear_errors();
         libxml_use_internal_errors($useInternalErrors);
 
