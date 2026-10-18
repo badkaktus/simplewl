@@ -78,8 +78,9 @@ public function get(string $url, int $maxBytes, array $headers = []): ?SafeHttpR
 
 Источники по приоритету; каждое поле берётся из первого источника, где оно есть:
 
-1. **JSON-LD**: все `<script type="application/ld+json">`. Узел `@type` = `Product`
-   (строка или массив типов) ищется в корне, в массиве верхнего уровня и в `@graph`.
+1. **JSON-LD**: все `<script type="application/ld+json">`. Узел `@type` = `Product` или
+   `ProductGroup` (строка или массив типов; у `ProductGroup` без `offers` цена берётся из
+   `hasVariant[0].offers`) ищется в корне, в массиве верхнего уровня и в `@graph`.
    Битый JSON пропускается.
    - `name` → title, `description` → description
    - `image`: строка | массив (первый элемент) | `ImageObject` (`url`)
@@ -101,15 +102,14 @@ public function get(string $url, int $maxBytes, array $headers = []): ?SafeHttpR
 
 ### Нормализация
 
-- `title`, `description`: `html_entity_decode`, схлопывание пробелов, `trim`; пустая строка
+- `title`, `description`: `strip_tags`, `html_entity_decode`, схлопывание пробелов, `trim`; пустая строка
   → `null`. `title` обрезается до 255 символов (лимит `ValidationHelper`), `description` —
   до 2000.
 - `amount`: число или числовая строка. Строка очищается от символов валюты и пробелов;
   `"1,299.00"` → `1299.00`, `"1.299,00"` → `1299.00` (последний разделитель — десятичный,
   если после него 1–2 цифры). Неразборчивое → `null`. Отрицательные → `null`.
 - `currency`: `strtoupper(trim())`; если кода нет в `currencies.short_code` → `null`
-  (проверка в `WishImportService` через `CurrencyService`/репозиторий, парсер остаётся
-  без БД).
+  (проверка в `WishImportService` запросом к модели `Currency`, парсер остаётся без БД).
 - `imageUrl`: разрешается относительно `finalUrl` (`UriResolver`); принимается только
   `http`/`https`, иначе `null`.
 
@@ -154,7 +154,7 @@ middleware `throttle:wish-import`.
   `currency-select` слушает `@wish-imported.window` и ставит `selectedOption`, если код есть
   в `options`.
 - Ошибки показываются блоком под полем URL (по образцу `errorGptGenerate`): `errorMessage`
-  из ответа, 429 → «Too many requests. Please try again later.», 422 → сообщения валидации,
+  из ответа, 429 → «Too many requests. Please try again later.», 400 → сообщения валидации,
   прочее → «Something went wrong. Please try again later.».
 - JS-логика — по образцу `getGeneratedDescription` в
   `components/textarea-with-generate-description.blade.php`.
