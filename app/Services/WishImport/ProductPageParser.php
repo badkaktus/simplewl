@@ -139,10 +139,17 @@ class ProductPageParser
             return null;
         }
 
-        $text = html_entity_decode(strip_tags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = trim((string) preg_replace('/\s+/u', ' ', $text));
+        // Tags become spaces, so adjacent blocks don't glue words; tags are stripped again after decoding,
+        // because JSON-LD descriptions often contain entity-encoded HTML
+        $text = html_entity_decode($this->stripTags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim((string) preg_replace('/\s+/u', ' ', $this->stripTags($text)));
 
         return $text === '' ? null : mb_substr($text, 0, $maxLength);
+    }
+
+    private function stripTags(string $html): string
+    {
+        return (string) preg_replace('/<[^>]*>/', ' ', $html);
     }
 
     private function imageUrl(mixed $value, string $pageUrl): ?string
@@ -164,6 +171,11 @@ class ProductPageParser
     {
         if (! is_string($value) && ! is_int($value) && ! is_float($value)) {
             return null;
+        }
+
+        // schema.org and Open Graph prices use a dot as the decimal separator without grouping
+        if (is_numeric($value)) {
+            return (float) $value >= 0 ? (float) $value : null;
         }
 
         $clean = (string) preg_replace('/[^\d.,-]/', '', (string) $value);

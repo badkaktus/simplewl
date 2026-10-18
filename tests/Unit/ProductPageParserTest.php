@@ -162,6 +162,22 @@ class ProductPageParserTest extends TestCase
         $this->assertSame('Line one two', $product->description);
     }
 
+    #[DataProvider('htmlDescriptionProvider')]
+    public function test_strips_html_from_description(string $description, string $expected): void
+    {
+        $product = $this->parse($this->jsonLd(['@type' => 'Product', 'name' => 'Mug', 'description' => $description]));
+
+        $this->assertSame($expected, $product->description);
+    }
+
+    public static function htmlDescriptionProvider(): array
+    {
+        return [
+            'adjacent blocks' => ['<p>one</p><p>two</p>line<br>three', 'one two line three'],
+            'entity-encoded tags' => ['&lt;p&gt;Hello&lt;/p&gt;&lt;br&gt;World', 'Hello World'],
+        ];
+    }
+
     public function test_truncates_long_description(): void
     {
         $product = $this->parse($this->jsonLd(['@type' => 'Product', 'name' => 'Mug', 'description' => str_repeat('б', 2500)]));
@@ -188,6 +204,9 @@ class ProductPageParserTest extends TestCase
             'not a number' => ['abc', null],
             'negative' => ['-5', null],
             'integer' => [456, 456.0],
+            'schema.org decimal with trailing zeros' => ['19.9900', 19.99],
+            'three decimals' => ['12.990', 12.99],
+            'float' => [1.5, 1.5],
         ];
     }
 
