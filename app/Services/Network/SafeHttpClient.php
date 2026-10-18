@@ -64,6 +64,20 @@ class SafeHttpClient
     }
 
     /**
+     * Aborts the transfer as soon as the body exceeds the limit,
+     * so a response without Content-Length can't fill the memory before it is checked.
+     *
+     * @return array<int, mixed>
+     */
+    public static function sizeLimitCurlOptions(int $maxBytes): array
+    {
+        return [
+            CURLOPT_NOPROGRESS => false,
+            CURLOPT_XFERINFOFUNCTION => static fn ($handle, int $downloadTotal, int $downloaded): int => $downloaded > $maxBytes ? 1 : 0,
+        ];
+    }
+
+    /**
      * @param  array<string, string>  $headers
      */
     private function request(string $url, int $maxBytes, array $headers): ?Response
@@ -90,7 +104,9 @@ class SafeHttpClient
                 ->connectTimeout(self::CONNECT_TIMEOUT_SECONDS)
                 ->withOptions([
                     // Pin the checked IP, so DNS rebinding can't swap it before the request
-                    'curl' => [CURLOPT_RESOLVE => [sprintf('%s:%d:%s', trim($host, '[]'), $port, $pinnedIp)]],
+                    'curl' => [
+                        CURLOPT_RESOLVE => [sprintf('%s:%d:%s', trim($host, '[]'), $port, $pinnedIp)],
+                    ] + self::sizeLimitCurlOptions($maxBytes),
                     'on_headers' => function (ResponseInterface $response) use ($maxBytes): void {
                         if ((int) $response->getHeaderLine('Content-Length') > $maxBytes) {
                             throw new RuntimeException('Response is too large');

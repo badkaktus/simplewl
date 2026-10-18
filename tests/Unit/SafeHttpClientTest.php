@@ -169,6 +169,30 @@ class SafeHttpClientTest extends TestCase
         $this->assertNull($this->fetch('https://shop.test/page'));
     }
 
+    public function test_size_limit_aborts_transfer_while_downloading(): void
+    {
+        // Http::fake bypasses curl, so the curl options are checked on a real transfer of a large local file
+        $file = tempnam(sys_get_temp_dir(), 'safe-http');
+        file_put_contents($file, str_repeat('x', 5 * 1024 * 1024));
+        $received = 0;
+
+        $handle = curl_init('file://'.$file);
+        curl_setopt_array($handle, SafeHttpClient::sizeLimitCurlOptions(self::LIMIT) + [
+            CURLOPT_WRITEFUNCTION => function ($handle, string $chunk) use (&$received): int {
+                $received += strlen($chunk);
+
+                return strlen($chunk);
+            },
+        ]);
+        $completed = curl_exec($handle);
+        $error = curl_errno($handle);
+        unlink($file);
+
+        $this->assertFalse($completed);
+        $this->assertSame(CURLE_ABORTED_BY_CALLBACK, $error);
+        $this->assertLessThan(5 * 1024 * 1024, $received);
+    }
+
     public function test_sends_given_headers(): void
     {
         Http::fake([
