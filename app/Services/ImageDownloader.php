@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Services\Network\SafeHttpClient;
+use App\Services\Network\SafeHttpResponse;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -29,7 +30,7 @@ class ImageDownloader
     public function download(string $url, string $directory): ?string
     {
         $response = $this->httpClient->get($url, self::MAX_SIZE_BYTES);
-        if ($response === null) {
+        if (! $response instanceof SafeHttpResponse) {
             return null;
         }
 

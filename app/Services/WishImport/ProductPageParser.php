@@ -178,7 +178,7 @@ class ProductPageParser
             return (float) $value >= 0 ? (float) $value : null;
         }
 
-        $clean = (string) preg_replace('/[^\d.,-]/', '', (string) $value);
+        $clean = (string) preg_replace('/[^\d.,-]/', '', $value);
         // "1.299,00" and "1,299.00" are both 1299: the last separator is decimal only when 1-2 digits follow it
         if (preg_match('/^(.*)[.,](\d{1,2})$/', $clean, $matches) === 1) {
             $clean = preg_replace('/[.,]/', '', $matches[1]).'.'.$matches[2];

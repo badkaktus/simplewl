@@ -6,6 +6,7 @@ namespace App\Services\WishImport;
 
 use App\Models\Currency;
 use App\Services\Network\SafeHttpClient;
+use App\Services\Network\SafeHttpResponse;
 
 /**
  * Fills a wish from the product page the user links to.
@@ -34,7 +35,7 @@ class WishImportService
             'Accept' => 'text/html,application/xhtml+xml',
         ]);
 
-        if ($response === null || ! $this->isHtml($response->contentType)) {
+        if (! $response instanceof SafeHttpResponse || ! $this->isHtml($response->contentType)) {
             return WishImportResult::failed("Couldn't load the page");
         }
 

@@ -26,7 +26,7 @@ final readonly class WishImportResult
      */
     public function toArray(): array
     {
-        if ($this->product === null) {
+        if (! $this->product instanceof ImportedProduct) {
             return ['isSuccess' => false, 'errorMessage' => (string) $this->errorMessage];
         }
 
