@@ -16,6 +16,8 @@ class RouteServiceProvider extends ServiceProvider
 
     public const GENERATE_DESCRIPTION_PER_DAY = 50;
 
+    public const WISH_IMPORT_PER_MINUTE = 10;
+
     public function boot(): void
     {
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(60)->by($request->user()?->id ?: $request->ip()));
@@ -25,6 +27,10 @@ class RouteServiceProvider extends ServiceProvider
             Limit::perMinute(self::GENERATE_DESCRIPTION_PER_MINUTE)->by('minute:'.$request->user()?->id),
             Limit::perDay(self::GENERATE_DESCRIPTION_PER_DAY)->by('day:'.$request->user()?->id),
         ]);
+
+        // Every import makes the server request a third-party page
+        RateLimiter::for('wish-import', fn (Request $request): Limit => Limit::perMinute(self::WISH_IMPORT_PER_MINUTE)
+            ->by((string) $request->user()?->id));
 
         $this->routes(function (): void {
             Route::middleware('api')

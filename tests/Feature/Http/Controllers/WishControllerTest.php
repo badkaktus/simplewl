@@ -23,6 +23,16 @@ class WishControllerTest extends TestCase
         $response->assertSee('New wish');
     }
 
+    public function test_create_page_has_import_button(): void
+    {
+        $this->be(User::factory()->create());
+
+        $this->get(route('wish.create'))
+            ->assertOk()
+            ->assertSee('Fill from link')
+            ->assertSee(route('wish.import'), false);
+    }
+
     public function test_wish_store_successfully(): void
     {
         $user = User::factory()->create();

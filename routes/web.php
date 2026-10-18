@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\WishController;
 use App\Http\Controllers\WishDescriptionGenerateController;
+use App\Http\Controllers\WishImportController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/wish', [WishController::class, 'store'])->name('wish.store');
     Route::get('/wish/create', [WishController::class, 'create'])->name('wish.create');
+    Route::post('/wish/import', WishImportController::class)
+        ->middleware('throttle:wish-import')
+        ->name('wish.import');
     Route::get('/my-wishlist', [MyWishlistController::class, 'index'])->name('my-wishlist');
     // Wish slugs are unique only within a wishlist, so wishes are resolved through their owner
     Route::scopeBindings()->group(function () {
