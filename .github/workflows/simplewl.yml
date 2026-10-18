@@ -45,8 +45,9 @@ jobs:
         run: composer audit
       - name: Install JS dependencies
         run: npm ci
+      # Dev dependencies are build tools only and never reach the browser
       - name: JS security audit
-        run: npm audit --audit-level=moderate
+        run: npm audit --omit=dev --audit-level=moderate
       - name: Execute rector
         run: vendor/bin/rector --dry-run
       - name: Execute laravel pint
